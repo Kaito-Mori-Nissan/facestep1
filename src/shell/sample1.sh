@@ -1,5 +1,5 @@
 #!/bin/bash
 
 echo "sample1.shが実行されました。"
-chmod +x ./src/shell/sample2.sh
+ls -l ./src/shell/sample2.sh
 echo "すべての処理が終了しました。"
