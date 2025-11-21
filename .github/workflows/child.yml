@@ -14,4 +14,5 @@ jobs:
         run: |
           echo '${{ inputs.env_json }}' | jq -r 'to_entries|map("\(.key)=\(.value)")|.[]' >> $GITHUB_ENV
       
-      - run: echo "App: $APP_NAME, Ver: $VERSION"
+      - run: |
+          echo "App: ${{ APP_NAME }}, Ver: ${{ VERSION }}"

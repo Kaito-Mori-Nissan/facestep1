@@ -20,8 +20,7 @@ jobs:
       - name: run script
         run: bash ./src/shell/sample1.sh
 
-  call-child:
+  call-child-workflow:
     uses: ./.github/workflows/child.yml
     with:
-      # envコンテキスト全体、または特定のマップをJSON文字列化
-      env_json: ${{ toJSON(env) }}
+      env_json: | ${{ toJSON(env) }}
