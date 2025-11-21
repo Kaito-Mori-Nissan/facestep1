@@ -1,0 +1,17 @@
+on:
+  workflow_call:
+    inputs:
+      env_json:
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # JSONを解析してGITHUB_ENVに書き込むことで、以降のステップで環境変数として使える
+      - name: Load Envs
+        run: |
+          echo '${{ inputs.env_json }}' | jq -r 'to_entries|map("\(.key)=\(.value)")|.[]' >> $GITHUB_ENV
+      
+      - run: echo "App: $APP_NAME, Ver: $VERSION"

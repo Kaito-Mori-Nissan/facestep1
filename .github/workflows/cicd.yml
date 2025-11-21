@@ -1,5 +1,9 @@
 name: cicd pipeline
 
+env:
+  APP_NAME: "myapp"
+  VERSION: "1.0.0"
+
 on: [push]
 
 jobs:
@@ -15,3 +19,9 @@ jobs:
 
       - name: run script
         run: bash ./src/shell/sample1.sh
+
+  call-child:
+    uses: ./.github/workflows/child.yml
+    with:
+      # envコンテキスト全体、または特定のマップをJSON文字列化
+      env_json: ${{ toJSON(env) }}
