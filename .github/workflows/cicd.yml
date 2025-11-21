@@ -1,8 +1,6 @@
 name: cicd pipeline
 
-env:
-  APP_NAME: "myapp"
-  VERSION: "1.0.0"
+
 
 on: [push]
 
@@ -21,6 +19,9 @@ jobs:
         run: bash ./src/shell/sample1.sh
 
   call-child-workflow:
+    env:
+      APP_NAME: "myapp"
+      VERSION: "1.0.0"
     uses: ./.github/workflows/child.yml
     with:
-      env_json: | ${{ toJSON(env) }}
+      env_json: ${{ toJSON(env) }}
