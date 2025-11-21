@@ -8,5 +8,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - run: |
+          ls -l ./src/shell/sample1.sh
+          ls -l ./src/shell/sample2.sh
       - name: run script
         run: bash ./src/shell/sample1.sh
