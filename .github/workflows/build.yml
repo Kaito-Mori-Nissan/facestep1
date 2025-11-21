@@ -1,0 +1,21 @@
+name: Build Job
+
+on:
+  workflow_call:
+    inputs:
+      TARGET_OS:
+        required: true
+        type: string
+      env_json:
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+      - name: Load envs
+        run: |
+          echo '${{ inputs.env_json }}' | jq -r 'to_entries|map("\(.key)=\(.value)")|.[]' >> $GITHUB_ENV
+          
