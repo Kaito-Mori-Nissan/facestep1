@@ -9,4 +9,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: run script
-        run: bash ./scripts/sample1.sh
+        run: bash ./src/shell/sample1.sh
