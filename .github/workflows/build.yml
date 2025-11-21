@@ -6,7 +6,13 @@ on:
       TARGET_OS:
         required: true
         type: string
-      env_json:
+      CI_TOOL_PATH:
+        required: true
+        type: string
+      BUILD_SCRIPTS_PATH:
+        required: true
+        type: string
+      BUILD_SETTINGS_PATH:
         required: true
         type: string
 
@@ -15,7 +21,18 @@ jobs:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
-      - name: Load envs
-        run: |
-          echo '${{ inputs.env_json }}' | jq -r 'to_entries|map("\(.key)=\(.value)")|.[]' >> $GITHUB_ENV
-          
+        if: ${{ inputs.TARGET_OS == 'linux' }}
+        uses: ./.github/workflows/build-linux
+        with:
+          BUILD_SCRIPTS_PATH: ${{ inputs.BUILD_SCRIPTS_PATH }}
+      - uses: actions/checkout@v4
+        if: ${{ inputs.TARGET_OS == 'windows' }}
+        uses: ./.github/workflows/build-windows
+        with:
+          BUILD_SCRIPTS_PATH: ${{ inputs.BUILD_SCRIPTS_PATH }}
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.TARGET_OS }}-img
+          path: ./target/nml/img/*
+          retention-days: 7

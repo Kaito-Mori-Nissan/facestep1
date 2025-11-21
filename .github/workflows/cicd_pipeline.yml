@@ -27,78 +27,48 @@ jobs:
     uses: ./.github/workflows/build.yml
     with:
       TARGET_OS: ${{ matrix.target_os }}
-      env_json: ${{ toJSON(env:) }}
+      CI_TOOL_PATH: ${{ env.CI_TOOL_PATH }}
+      BUILD_SCRIPTS_PATH: ${{ env.BUILD_SCRIPTS_PATH }}
+      BUILD_SETTINGS_PATH: ${{ env.BUILD_SETTINGS_PATH }}
 
-
-
-
-
-
-
-
-
-
-jobs:
-  build-job:
+  build-matrix:
     runs-on: ubuntu-latest
-    if: startsWith(github.ref_name, 'release/')
-    continue-on-error: true
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - uses: actions/checkout@v4
-      - run: |
-          echo "Executing build job for Linux environment by default"
-          bash ${BUILD_SCRIPTS_PATH}/make.sh
-          bash ${BUILD_SCRIPTS_PATH}/install_linux.sh
-        shell: bash
-      - uses: actions/upload-artifact@v4
-        with:
-          name: image
-          path: ./target/nml/img/*
-          retention-days: 7
-  
-  SAST-analysis:
-    needs: data-preprocessing
+      - id: set-matrix
+        run: |
+          MATRIX_JSON=$(cat projects.json)
+          echo "matrix=$MATRIX_JSON" >> "$GITHUB_OUTPUT"
+
+  per-project-job:
+    needs: build-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJSON(needs.build-matrix.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Show project info
+        run: |
+          echo "project_id   = ${{ matrix.project_id }}"
+          echo "name         = ${{ matrix.PROJECT_NAME }}"
+          echo "dir          = ${{ matrix.PROJECT_DIR }}"
+          echo "triggers     = ${{ join(matrix.FILES_CHANGED_TRIGGER, ', ') }}"
+
+  Static-analysis:
+    needs: build-matrix
     uses: ./.github/workflows/static_analysis/code_verification.yml
     with:
-      PROJECT_NAME: ${{ matrix.pair.PROJECT_NAME }}
-      PROJECT_DIR: ${{ matrix.pair.PROJECT_DIR }}
+      PROJECT_NAME: ${{ matrix.PROJECT_NAME }}
+      PROJECT_DIR: ${{ matrix.PROJECT_DIR }}
+      CI_TOOL_PATH: ${{ env.CI_TOOL_PATH }}
+      CI_SETTINGS_PATH: ${{ env.CI_SETTINGS_PATH }}
+      BUILD_SCRIPTS_PATH: ${{ env.BUILD_SCRIPTS_PATH }}
+      BUILD_SETTINGS_PATH: ${{ env.BUILD_SETTINGS_PATH }}
+      STATIC_ANALYSIS_SCRIPTS_PATH: ${{ env.STATIC_ANALYSIS_SCRIPTS_PATH }}
+      STATIC_ANALYSIS_SETTINGS_PATH: ${{ env.STATIC_ANALYSIS_SETTINGS_PATH }}
     strategy:
-      matrix:
-        include: ${{ needs.data-preprocessing.outputs.matrix }}
+      matrix: ${{ fromJSON(needs.build-matrix.outputs.matrix) }}
 
-  SAST-summary-report:
-    runs-on: ubuntu-latest
-    needs: SAST-analysis
-    steps:
-      - run: |
-         echo "Run ID is ${{ github.run_id }}"
-         bash ${STATIC_ANALYSIS_SCRIPTS_PATH}/get_failed_job_info.sh ${{ github.run_id }}
-         bash ${STATIC_ANALYSIS_SCRIPTS_PATH}/get_execution_time_info.sh ${{ github.run_id }}
-         bash ${STATIC_ANALYSIS_SCRIPTS_PATH}/summarize_error_count.sh ${{ github.run_id }}
-         ls -l
-        shell: bash
-      - name: Upload SAST ummary report
-        uses: actions/upload-artifact@v4
-        with:
-          name: SAST-summary-report
-          path: |
-              ./failed_jobs_info_${{ github.run_id }}.csv
-              ./pipeline_execution_time_info_${{ github.run_id }}.csv
-              ./error_count_summary_${{ github.run_id }}.csv
-          retention-days: 30
 
-  unit-test:
-    needs: SAST-summary-report
-    runs-on: ubuntu-latest
-    environment: manual
-    strategy:
-      matrix:
-        Application_NAME: ["--app napp_ract_acio", "--app napp_ract_hvac", "--app napp_ract_rlu",
-                           "--app napp_ract_res", "--app napp_ract_rhl", "--app napp_ract_rps",
-                           "--app napp_ract_rpu", "--app napp_ract_rtu", "--app napp_rnot_bn",
-                           "--app napp_rnot_cm", "--app napp_rnot_ca", "--app napp_rnot_idsr",
-                           "--app napp_rnot_sa", "--app napp_rnot_za", "--app napp_ucd",
-                           "--app napp_rdm"]
-    steps:
-     - uses: .github/actions/test/unit-test@main # TODO: change to real path
-       with: ${{ matrix.Application_NAME }}

@@ -1,0 +1,15 @@
+name: Build Linux
+description: Build steps for Linux
+inputs:
+  BUILD_SCRIPTS_PATH:
+    description: 'Path to the build scripts'
+    required: true
+
+runs:
+  using: composite
+  steps:
+      shell: bash
+      run: |
+        echo "Executing build job for Linux environment by default"
+        echo bash ${{ inputs.BUILD_SCRIPTS_PATH }}/make.sh
+        echo bash ${{ inputs.BUILD_SCRIPTS_PATH }}/install_linux.sh

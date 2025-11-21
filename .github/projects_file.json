@@ -1,0 +1,252 @@
+{
+  "include": [
+    {
+      "project_id": "fod_manager",
+      "PROJECT_NAME": "fod_manager",
+      "PROJECT_DIR": "ccs/fod",
+      "FILES_CHANGED_TRIGGER": [
+        "nml/app/ccs/fod/fod_manager/**/*"
+      ]
+    },
+    {
+      "project_id": "ract_fw",
+      "PROJECT_NAME": "ract_fw",
+      "PROJECT_DIR": "ccs/lib/ract_fw",
+      "FILES_CHANGED_TRIGGER": [
+        "nml/app/ccs/lib/ract_fw/**/*"
+      ]
+    },
+    {
+      "project_id": "ucd_fw",
+      "PROJECT_NAME": "ucd_fw",
+      "PROJECT_DIR": "ccs/lib/ucd_fw",
+      "FILES_CHANGED_TRIGGER": [
+        "nml/app/ccs/lib/ucd_fw/**/*"
+      ]
+    },
+    {
+      "project_id": "remote_actuator",
+      "PROJECT_NAME": "remote_actuator",
+      "PROJECT_DIR": "ccs/remote_actuator",
+      "FILES_CHANGED_TRIGGER": [
+        "nml/app/ccs/remote_actuator/**/*"
+      ]
+    },
+    {
+      "project_id": "remote_notification",
+      "PROJECT_NAME": "remote_notification",
+      "PROJECT_DIR": "ccs/remote_notification",
+      "FILES_CHANGED_TRIGGER": [
+        "nml/app/ccs/remote_notification/**/*"
+      ]
+    },
+    {
+      "project_id": "rdm",
+      "PROJECT_NAME": "rdm",
+      "PROJECT_DIR": "ccs/suggestion/rdm",
+      "FILES_CHANGED_TRIGGER": [
+        "nml/app/ccs/suggestion/rdm/**/*"
+      ]
+    },
+    {
+      "project_id": "ucd",
+      "PROJECT_NAME": "ucd",
+      "PROJECT_DIR": "ccs/ucd",
+      "FILES_CHANGED_TRIGGER": [
+        "nml/app/ccs/ucd/**/*"
+      ]
+    },
+    {
+      "project_id": "appops",
+      "PROJECT_NAME": "ucd_fw",
+      "PROJECT_DIR": "common/appops",
+      "FILES_CHANGED_TRIGGER": [
+        "nml/app/common/appops/**/*"
+      ]
+    },
+    {
+      "project_id": "app_manager",
+      "PROJECT_NAME": "ucd_fw",
+      "PROJECT_DIR": "common/app_manager",
+      "FILES_CHANGED_TRIGGER": [
+        "nml/app/common/app_manager/**/*"
+      ]
+    },
+    {
+      "project_id": "dam",
+      "PROJECT_NAME": "dam",
+      "PROJECT_DIR": "common/dam/dam",
+      "FILES_CHANGED_TRIGGER": [
+        "nml/app/common/dam/dam/**/*"
+      ]
+    },
+    {
+      "project_id": "dcm",
+      "PROJECT_NAME": "dcm",
+      "PROJECT_DIR": "common/dam/dcm",
+      "FILES_CHANGED_TRIGGER": [
+        "nml/app/common/dam/dcm/**/*"
+      ]
+    },
+    {
+      "project_id": "calibration",
+      "PROJECT_NAME": "calibration",
+      "PROJECT_DIR": "common/lib/calibration",
+      "FILES_CHANGED_TRIGGER": [
+        "nml/app/common/lib/calibration/**/*"
+      ]
+    },
+    {
+      "project_id": "common_fw",
+      "PROJECT_NAME": "common_fw",
+      "PROJECT_DIR": "common/lib/common_fw",
+      "FILES_CHANGED_TRIGGER": [
+        "nml/app/common/lib/common_fw/**/*"
+      ]
+    },
+    {
+      "project_id": "dbg_operation",
+      "PROJECT_NAME": "dbg_operation",
+      "PROJECT_DIR": "common/lib/dbg_operation",
+      "FILES_CHANGED_TRIGGER": [
+        "nml/app/common/lib/dbg_operation/**/*"
+      ]
+    },
+    {
+      "project_id": "ds_operation",
+      "PROJECT_NAME": "ds_operation",
+      "PROJECT_DIR": "common/lib/ds_operation",
+      "FILES_CHANGED_TRIGGER": [
+        "nml/app/common/lib/ds_operation/**/*"
+      ]
+    },
+    {
+      "project_id": "fodservice",
+      "PROJECT_NAME": "fodservice",
+      "PROJECT_DIR": "common/lib/fodservice",
+      "FILES_CHANGED_TRIGGER": [
+        "nml/app/common/lib/fodservice/**/*"
+      ]
+    },
+    {
+      "project_id": "jwt_verification",
+      "PROJECT_NAME": "jwt_verification",
+      "PROJECT_DIR": "common/lib/jwt_verification",
+      "FILES_CHANGED_TRIGGER": [
+        "nml/app/common/lib/jwt_verification/**/*"
+      ]
+    },
+    {
+      "project_id": "mqtt_client",
+      "PROJECT_NAME": "mqtt_client",
+      "PROJECT_DIR": "common/lib/mqtt_client",
+      "FILES_CHANGED_TRIGGER": [
+        "nml/app/common/lib/mqtt_client/**/*"
+      ]
+    },
+    {
+      "project_id": "notification",
+      "PROJECT_NAME": "notification",
+      "PROJECT_DIR": "common/lib/notification",
+      "FILES_CHANGED_TRIGGER": [
+        "nml/app/common/lib/notification/**/*"
+      ]
+    },
+    {
+      "project_id": "sig_operation",
+      "PROJECT_NAME": "sig_operation",
+      "PROJECT_DIR": "common/lib/sig_operation",
+      "FILES_CHANGED_TRIGGER": [
+        "nml/app/common/lib/sig_operation/**/*"
+      ]
+    },
+    {
+      "project_id": "someip_client",
+      "PROJECT_NAME": "someip_client",
+      "PROJECT_DIR": "common/lib/someip_client",
+      "FILES_CHANGED_TRIGGER": [
+        "nml/app/common/lib/someip_client/**/*"
+      ]
+    },
+    {
+      "project_id": "someip_serverops",
+      "PROJECT_NAME": "someip_serverops",
+      "PROJECT_DIR": "common/lib/someip_serverops",
+      "FILES_CHANGED_TRIGGER": [
+        "nml/app/common/lib/someip_serverops/**/*"
+      ]
+    },
+    {
+      "project_id": "uds_operation",
+      "PROJECT_NAME": "someip_serverops",
+      "PROJECT_DIR": "common/lib/uds_operation",
+      "FILES_CHANGED_TRIGGER": [
+        "nml/app/common/lib/uds_operation/Internal/static/**/*"
+      ]
+    },
+    {
+      "project_id": "napp_manager",
+      "PROJECT_NAME": "napp_manager",
+      "PROJECT_DIR": "common/napp_manager",
+      "FILES_CHANGED_TRIGGER": [
+        "nml/app/common/napp_manager/**/*"
+      ]
+    },
+    {
+      "project_id": "someip_gw",
+      "PROJECT_NAME": "napp_manager",
+      "PROJECT_DIR": "common/someip/someip_gw",
+      "FILES_CHANGED_TRIGGER": [
+        "nml/app/common/someip/someip_gw/**/*"
+      ]
+    },
+    {
+      "project_id": "someip-mng",
+      "PROJECT_NAME": "someip_mng",
+      "PROJECT_DIR": "common/someip/someip_mng",
+      "FILES_CHANGED_TRIGGER": [
+        "nml/app/common/someip/someip_mng/**/*"
+      ]
+    },
+    {
+      "project_id": "can_if",
+      "PROJECT_NAME": "suppif_can_if",
+      "PROJECT_DIR": "common/supp_if/can_if",
+      "FILES_CHANGED_TRIGGER": [
+        "nml/app/common/supp_if/can_if/**/*"
+      ]
+    },
+    {
+      "project_id": "notification_if",
+      "PROJECT_NAME": "suppif_notification_if",
+      "PROJECT_DIR": "common/supp_if/notification_if",
+      "FILES_CHANGED_TRIGGER": [
+        "nml/app/common/supp_if/notification_if/**/*"
+      ]
+    },
+    {
+      "project_id": "fotamaster",
+      "PROJECT_NAME": "fotamaster",
+      "PROJECT_DIR": "fota_rdiag/fota/fota_master/01_source/Master",
+      "FILES_CHANGED_TRIGGER": [
+        "nml/app/fota_rdiag/fota/fota_master/01_source/Master/**/*"
+      ]
+    },
+    {
+      "project_id": "dca",
+      "PROJECT_NAME": "rdiag-dca",
+      "PROJECT_DIR": "fota_rdiag/rdiag/dca/Workspace/app/DCA",
+      "FILES_CHANGED_TRIGGER": [
+        "nml/app/fota_rdiag/rdiag/dca/Workspace/app/DCA/**/*"
+      ]
+    },
+    {
+      "project_id": "ddg",
+      "PROJECT_NAME": "rdiag-ddg",
+      "PROJECT_DIR": "fota_rdiag/rdiag/ddg",
+      "FILES_CHANGED_TRIGGER": [
+        "nml/app/fota_rdiag/rdiag/ddg/Workspace/app/ddg/**/*"
+      ]
+    }
+  ]
+}
