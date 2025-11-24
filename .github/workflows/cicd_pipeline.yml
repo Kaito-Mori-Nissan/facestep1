@@ -17,7 +17,6 @@ jobs:
 
   build-job:
     name: Build | ${{ matrix.target_os_upper }}
-    runs-on: self-hosted
     if: startsWith(github.ref_name, 'release/')
     continue-on-error: true
     strategy:
