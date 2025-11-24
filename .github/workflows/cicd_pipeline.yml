@@ -24,7 +24,7 @@ jobs:
       matrix:
         target_os: [ 'linux', 'windows' ]
         target_os_upper: [ 'LINUX', 'WINDOWS' ]
-    uses: ./.github/workflows/build.yml
+    uses: owner/repo/.github/workflows/build.yml
     with:
       TARGET_OS: ${{ matrix.target_os }}
       CI_TOOL_PATH: ${{ env.CI_TOOL_PATH }}
@@ -60,7 +60,7 @@ jobs:
     needs: build-matrix
     strategy:
       matrix: ${{ fromJSON(needs.build-matrix.outputs.matrix) }}
-    uses: ./.github/workflows/code_verification.yml
+    uses: owner/repo/.github/workflows/code_verification.yml
     with:
       PROJECT_NAME: ${{ matrix.PROJECT_NAME }}
       PROJECT_DIR: ${{ matrix.PROJECT_DIR }}
