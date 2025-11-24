@@ -16,7 +16,7 @@ on:
 jobs:
   Bug-Finder:
     name: Code-Verification | Bug-Finder | ${{ matrix.project.PROJECT_NAME }}
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     continue-on-error: true
     strategy:
       matrix:
@@ -27,11 +27,11 @@ jobs:
         shell: bash
         run: |
           echo "/opt/MathWorks/R2024b/polyspace/bin/polyspace-bug-finder-server \
-            -options-file \"${{ matrix.project.PROJECT_DIR }}/app_common_option.txt\" \
-            -options-file \"${{ matrix.project.PROJECT_DIR }}/app_bf_option.txt\" \
-            -options-file \"${{ inputs.STATIC_ANALYSIS_SETTINGS_PATH }}/bug-finder-options.txt\" \
-            -checkers-selection-file \"${{ inputs.STATIC_ANALYSIS_SETTINGS_PATH }}/custom_config.xml\" \
-            -report-output-name \"${{ matrix.project.PROJECT_NAME }}_BugFinder\""
+          echo  -options-file \"${{ matrix.project.PROJECT_DIR }}/app_common_option.txt\" \
+          echo  -options-file \"${{ matrix.project.PROJECT_DIR }}/app_bf_option.txt\" \
+          echo  -options-file \"${{ inputs.STATIC_ANALYSIS_SETTINGS_PATH }}/bug-finder-options.txt\" \
+          echo  -checkers-selection-file \"${{ inputs.STATIC_ANALYSIS_SETTINGS_PATH }}/custom_config.xml\" \
+          echo  -report-output-name \"${{ matrix.project.PROJECT_NAME }}_BugFinder\""
       - run: echo ls -l
       - run: echo python3 "${{ inputs.STATIC_ANALYSIS_SCRIPTS_PATH }}/print_error_count.py" bf "./bug-finder-results/Polyspace-Doc/${{ matrix.project.PROJECT_NAME }}_BugFinder.html"
       - name: Upload Bug-Finder Artifacts
@@ -43,7 +43,7 @@ jobs:
 
   Code-Prover:
     name: Code-Verification | Code-Prover | ${{ matrix.project.PROJECT_NAME }}
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     continue-on-error: true
     strategy:
       matrix:
@@ -54,10 +54,10 @@ jobs:
         shell: bash
         run: |
           echo "/opt/MathWorks/R2024b/polyspace/bin/polyspace-code-prover-server \
-            -options-file \"${{ matrix.project.PROJECT_DIR }}/app_common_option.txt\" \
-            -options-file \"${{ matrix.project.PROJECT_DIR }}/app_cp_option.txt\" \
-            -options-file \"${{ inputs.STATIC_ANALYSIS_SETTINGS_PATH }}/code-prover-options.txt\" \
-            -report-output-name \"${{ matrix.project.PROJECT_NAME }}_CodeProver\""
+          echo  -options-file \"${{ matrix.project.PROJECT_DIR }}/app_common_option.txt\" \
+          echo  -options-file \"${{ matrix.project.PROJECT_DIR }}/app_cp_option.txt\" \
+          echo  -options-file \"${{ inputs.STATIC_ANALYSIS_SETTINGS_PATH }}/code-prover-options.txt\" \
+          echo  -report-output-name \"${{ matrix.project.PROJECT_NAME }}_CodeProver\""
       - run: echo ls -l
       - run: echo python3 "${{ inputs.STATIC_ANALYSIS_SCRIPTS_PATH }}/print_error_count.py" cp "./code-prover-results/Polyspace-Doc/${{ matrix.project.PROJECT_NAME }}_CodeProver.html"
       - name: Upload Code-Prover Artifacts

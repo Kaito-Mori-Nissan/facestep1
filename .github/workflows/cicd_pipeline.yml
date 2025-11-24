@@ -63,7 +63,6 @@ jobs:
 
   Static-analysis:
     needs: detect-changes
-    runs-on: ubuntu-latest
     uses: ./.github/workflows/code_verification.yml
     with:
       PROJECT_MATRIX: ${{ needs.detect-changes.outputs.matrix }}
