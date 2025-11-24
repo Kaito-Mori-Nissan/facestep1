@@ -64,8 +64,6 @@ jobs:
   Static-analysis:
     needs: detect-changes
     runs-on: ubuntu-latest
-    strategy:
-      matrix: ${{ fromJSON(needs.detect-changes.outputs.matrix) }}
     steps:
       - uses: ./.github/workflows/code_verification.yml
         with:
