@@ -59,7 +59,7 @@ jobs:
 
   Static-analysis:
     needs: build-matrix
-    uses: ./.github/workflows/static_analysis/code_verification.yml
+    uses: ./.github/workflows/code_verification.yml
     with:
       PROJECT_NAME: ${{ matrix.PROJECT_NAME }}
       PROJECT_DIR: ${{ matrix.PROJECT_DIR }}
