@@ -25,7 +25,7 @@ for pid in "${project_ids[@]}"; do
     | select(.project_id == $pid)
     | (.FILES_CHANGED_TRIGGER // [])
     | .[]
-  ' "$STRUCTURE_FILE" | while IFS= read -r pattern; do
+  ' "$PROJECTS_FILE" | while IFS= read -r pattern; do
       echo "  - \"$pattern\"" >> "$CHANGED_FILES_RULES"
     done
 done
