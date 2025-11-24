@@ -21,11 +21,12 @@ jobs:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
+      - name: Build for Linux
         if: ${{ inputs.TARGET_OS == 'linux' }}
         uses: ./.github/actions/build-linux
         with:
           BUILD_SCRIPTS_PATH: ${{ inputs.BUILD_SCRIPTS_PATH }}
-      - uses: actions/checkout@v4
+      - name: Build for Windows
         if: ${{ inputs.TARGET_OS == 'windows' }}
         uses: ./.github/actions/build-windows
         with:
