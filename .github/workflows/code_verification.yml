@@ -3,10 +3,7 @@ name: Static Analysis
 on:
   workflow_call:
     inputs:
-      PROJECT_NAME:
-        required: true
-        type: string
-      PROJECT_DIR:
+      PROJECT_MATRIX:
         required: true
         type: string
       STATIC_ANALYSIS_SCRIPTS_PATH:
@@ -18,50 +15,54 @@ on:
 
 jobs:
   Bug-Finder:
-    name: Code-Verification | Bug-Finder
-    runs-on: [self-hosted]
+    name: Code-Verification | Bug-Finder | ${{ matrix.project.PROJECT_NAME }}
+    runs-on: self-hosted
     continue-on-error: true
+    strategy:
+      matrix:
+        project: ${{ fromJSON(inputs.PROJECT_MATRIX) }}
     steps:
       - uses: actions/checkout@v4
       - name: Bug Finder
         shell: bash
         run: |
           echo "/opt/MathWorks/R2024b/polyspace/bin/polyspace-bug-finder-server \
-            -options-file "${PROJECT_DIR}/app_common_option.txt" \
-            -options-file "${PROJECT_DIR}/app_bf_option.txt" \
-            -options-file "${STATIC_ANALYSIS_SETTINGS_PATH}/bug-finder-options.txt" \
-            -checkers-selection-file "${STATIC_ANALYSIS_SETTINGS_PATH}/custom_config.xml" \
-            -report-output-name "${PROJECT_NAME}_BugFinder""
+            -options-file \"${{ matrix.project.PROJECT_DIR }}/app_common_option.txt\" \
+            -options-file \"${{ matrix.project.PROJECT_DIR }}/app_bf_option.txt\" \
+            -options-file \"${{ inputs.STATIC_ANALYSIS_SETTINGS_PATH }}/bug-finder-options.txt\" \
+            -checkers-selection-file \"${{ inputs.STATIC_ANALYSIS_SETTINGS_PATH }}/custom_config.xml\" \
+            -report-output-name \"${{ matrix.project.PROJECT_NAME }}_BugFinder\""
       - run: echo ls -l
-        shell: bash
-      - run: echo python3 "${STATIC_ANALYSIS_SCRIPTS_PATH}/print_error_count.py" bf "./bug-finder-results/Polyspace-Doc/${PROJECT_NAME}_BugFinder.html"
+      - run: echo python3 "${{ inputs.STATIC_ANALYSIS_SCRIPTS_PATH }}/print_error_count.py" bf "./bug-finder-results/Polyspace-Doc/${{ matrix.project.PROJECT_NAME }}_BugFinder.html"
       - name: Upload Bug-Finder Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ inputs.PROJECT_NAME }}-${{ github.job }}-${{ github.run_id }} #${CI_PIPELINE_CREATED_AT}の代替は存在しない
+          name: ${{ matrix.project.PROJECT_NAME }}-Bug-Finder-${{ github.run_id }}
           path: ./bug-finder-results/**/*
           retention-days: 30
 
   Code-Prover:
-    name: Code-Verification | Code-Prover
-    runs-on: [self-hosted]
+    name: Code-Verification | Code-Prover | ${{ matrix.project.PROJECT_NAME }}
+    runs-on: self-hosted
     continue-on-error: true
+    strategy:
+      matrix:
+        project: ${{ fromJSON(inputs.PROJECT_MATRIX) }}
     steps:
       - uses: actions/checkout@v4
       - name: Code Prover
         shell: bash
         run: |
-          echo "/opt/MathWorks/R2024b/polyspace/bin/polyspace-code-prover-server 
-            -options-file ${PROJECT_DIR}/app_common_option.txt
-            -options-file ${PROJECT_DIR}/app_cp_option.txt
-            -options-file ${STATIC_ANALYSIS_SETTINGS_PATH}/code-prover-options.txt 
-            -report-output-name ${PROJECT_NAME}_CodeProver"
+          echo "/opt/MathWorks/R2024b/polyspace/bin/polyspace-code-prover-server \
+            -options-file \"${{ matrix.project.PROJECT_DIR }}/app_common_option.txt\" \
+            -options-file \"${{ matrix.project.PROJECT_DIR }}/app_cp_option.txt\" \
+            -options-file \"${{ inputs.STATIC_ANALYSIS_SETTINGS_PATH }}/code-prover-options.txt\" \
+            -report-output-name \"${{ matrix.project.PROJECT_NAME }}_CodeProver\""
       - run: echo ls -l
-      - run: echo python3 ${STATIC_ANALYSIS_SCRIPTS_PATH}/print_error_count.py cp ./code-prover-results/Polyspace-Doc/${PROJECT_NAME}_CodeProver.html
-        #when: manual
+      - run: echo python3 "${{ inputs.STATIC_ANALYSIS_SCRIPTS_PATH }}/print_error_count.py" cp "./code-prover-results/Polyspace-Doc/${{ matrix.project.PROJECT_NAME }}_CodeProver.html"
       - name: Upload Code-Prover Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ inputs.PROJECT_NAME }}-${{ github.job }}-${{ github.run_id }} #${CI_PIPELINE_CREATED_AT}の代替は存在しない
+          name: ${{ matrix.project.PROJECT_NAME }}-Code-Prover-${{ github.run_id }}
           path: ./code-prover-results/**/*
           retention-days: 30
