@@ -1,0 +1,16 @@
+name: Build QNX
+description: Build steps for QNX
+inputs:
+  BUILD_SCRIPTS_PATH:
+    description: 'Path to the build scripts'
+    required: true
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        eho source /home/xw2/qnx710/qnxsdp-env.sh
+        echo "Executing QNX build job"
+        echo ./make.sh --qnx
+        echo "Completed build.. Packaging artifacts"
+        echo bash "${{ inputs.BUILD_SCRIPTS_PATH }}/install_linux.sh"

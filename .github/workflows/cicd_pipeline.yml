@@ -64,12 +64,10 @@ jobs:
   Static-analysis:
     needs: detect-changes
     runs-on: ubuntu-latest
-    steps:
-      - uses: ./.github/workflows/code_verification.yml
-        with:
-          PROJECT_MATRIX: ${{ needs.detect-changes.outputs.matrix }}
-          STATIC_ANALYSIS_SCRIPTS_PATH: ci/script/static_analysis
-          STATIC_ANALYSIS_SETTINGS_PATH: ci/settings/static_analysis
-
+    uses: ./.github/workflows/code_verification.yml
+    with:
+      PROJECT_MATRIX: ${{ needs.detect-changes.outputs.matrix }}
+      STATIC_ANALYSIS_SCRIPTS_PATH: ci/script/static_analysis
+      STATIC_ANALYSIS_SETTINGS_PATH: ci/settings/static_analysis
 
 
