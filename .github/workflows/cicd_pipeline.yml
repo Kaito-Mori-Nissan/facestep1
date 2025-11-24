@@ -7,14 +7,14 @@ env:
   CI_TOOL_PATH: ci/script
   CI_SETTINGS_PATH: ci/settings
 
-  BUILD_SCRIPTS_PATH: ${{ env.CI_TOOL_PATH }}/build
-  BUILD_SETTINGS_PATH: ${{ env.CI_SETTINGS_PATH }}/build
+  BUILD_SCRIPTS_PATH: ci/script/build
+  BUILD_SETTINGS_PATH: ci/settings/build
 
-  STATIC_ANALYSIS_SCRIPTS_PATH: ${{ env.CI_TOOL_PATH }}/static_analysis
-  STATIC_ANALYSIS_SETTINGS_PATH: ${{ env.CI_SETTINGS_PATH }}/static_analysis
+  STATIC_ANALYSIS_SCRIPTS_PATH: ci/script/static_analysis
+  STATIC_ANALYSIS_SETTINGS_PATH: ci/settings/static_analysis
 
 jobs:
-  
+
   build-job:
     name: Build | $ {{ matrix.target_os_upper }}
     runs-on: self-hosted
