@@ -46,28 +46,27 @@ jobs:
   build-job:
     name: Build | ${{ matrix.target_os_upper }}
     if: startsWith(github.ref_name, 'release/')
-    continue-on-error: true
     strategy:
       matrix:
         target_os: [ 'linux', 'windows' ]
         target_os_upper: [ 'LINUX', 'WINDOWS' ]
-    uses: owner/repo/.github/workflows/build.yml
+    uses: ./.github/workflows/build.yml
     with:
       TARGET_OS: ${{ matrix.target_os }}
-      CI_TOOL_PATH: ${{ env.CI_TOOL_PATH }}
-      BUILD_SCRIPTS_PATH: ${{ env.BUILD_SCRIPTS_PATH }}
-      BUILD_SETTINGS_PATH: ${{ env.BUILD_SETTINGS_PATH }}
+      CI_TOOL_PATH: ci/script
+      BUILD_SCRIPTS_PATH: ci/script/build
+      BUILD_SETTINGS_PATH: ci/settings/build
 
   Static-analysis:
     needs: detect-changes
     strategy:
       matrix: ${{ fromJSON(needs.detect-changes.outputs.matrix) }}
-    uses: owner/repo/.github/workflows/code_verification.yml
+    uses: ./.github/workflows/code_verification.yml
     with:
       PROJECT_NAME: ${{ matrix.PROJECT_NAME }}
       PROJECT_DIR: ${{ matrix.PROJECT_DIR }}
-      STATIC_ANALYSIS_SCRIPTS_PATH: ${{ env.STATIC_ANALYSIS_SCRIPTS_PATH }}
-      STATIC_ANALYSIS_SETTINGS_PATH: ${{ env.STATIC_ANALYSIS_SETTINGS_PATH }}
+      STATIC_ANALYSIS_SCRIPTS_PATH: ci/script/static_analysis
+      STATIC_ANALYSIS_SETTINGS_PATH: ci/settings/static_analysis
 
 
 

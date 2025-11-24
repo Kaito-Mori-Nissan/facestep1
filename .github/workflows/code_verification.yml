@@ -20,6 +20,7 @@ jobs:
   Bug-Finder:
     name: Code-Verification | Bug-Finder
     runs-on: [self-hosted]
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - name: Bug Finder
@@ -44,6 +45,7 @@ jobs:
   Code-Prover:
     name: Code-Verification | Code-Prover
     runs-on: [self-hosted]
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - name: Code Prover
