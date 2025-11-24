@@ -24,12 +24,13 @@ jobs:
       matrix:
         target_os: [ 'linux', 'windows' ]
         target_os_upper: [ 'LINUX', 'WINDOWS' ]
-    uses: ./.github/workflows/build.yml
-    with:
-      TARGET_OS: ${{ matrix.target_os }}
-      CI_TOOL_PATH: $CI_TOOL_PATH
-      BUILD_SCRIPTS_PATH: $BUILD_SCRIPTS_PATH
-      BUILD_SETTINGS_PATH: $BUILD_SETTINGS_PATH
+    steps:
+      - uses: ./.github/workflows/build.yml
+        with:
+          TARGET_OS: ${{ matrix.target_os }}
+          CI_TOOL_PATH: $CI_TOOL_PATH
+          BUILD_SCRIPTS_PATH: $BUILD_SCRIPTS_PATH
+          BUILD_SETTINGS_PATH: $BUILD_SETTINGS_PATH
 
   build-matrix:
     runs-on: ubuntu-latest
