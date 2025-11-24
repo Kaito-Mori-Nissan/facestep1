@@ -28,7 +28,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y jq
       - name: Generate changed-files rules from PROJECTS_FILE
-        run: ./github/scripts/generate-changed-files-rules.sh
+        run: ./github/scripts/generate-changed-files.sh
         shell: bash
       - name: Get all related files that have changed
         id: changed-files
