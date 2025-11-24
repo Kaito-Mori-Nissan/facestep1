@@ -22,12 +22,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         if: ${{ inputs.TARGET_OS == 'linux' }}
-        uses: ./.github/workflows/build-linux
+        uses: ./.github/actions/build-linux
         with:
           BUILD_SCRIPTS_PATH: ${{ inputs.BUILD_SCRIPTS_PATH }}
       - uses: actions/checkout@v4
         if: ${{ inputs.TARGET_OS == 'windows' }}
-        uses: ./.github/workflows/build-windows
+        uses: ./.github/actions/build-windows
         with:
           BUILD_SCRIPTS_PATH: ${{ inputs.BUILD_SCRIPTS_PATH }}
       - name: Upload Build Artifacts
