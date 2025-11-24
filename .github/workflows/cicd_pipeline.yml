@@ -15,7 +15,7 @@ env:
 
 jobs:
   detect-changes:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.gen-matrix.outputs.matrix }}
     env:
