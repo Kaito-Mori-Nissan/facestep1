@@ -16,7 +16,7 @@ env:
 jobs:
 
   build-job:
-    name: Build | $ {{ matrix.target_os_upper }}
+    name: Build | ${{ matrix.target_os_upper }}
     runs-on: self-hosted
     if: startsWith(github.ref_name, 'release/')
     continue-on-error: true
@@ -24,13 +24,12 @@ jobs:
       matrix:
         target_os: [ 'linux', 'windows' ]
         target_os_upper: [ 'LINUX', 'WINDOWS' ]
-    steps:
-      - uses: ./.github/workflows/build.yml
-        with:
-          TARGET_OS: ${{ matrix.target_os }}
-          CI_TOOL_PATH: $CI_TOOL_PATH
-          BUILD_SCRIPTS_PATH: $BUILD_SCRIPTS_PATH
-          BUILD_SETTINGS_PATH: $BUILD_SETTINGS_PATH
+    uses: ./.github/workflows/build.yml
+    with:
+      TARGET_OS: ${{ matrix.target_os }}
+      CI_TOOL_PATH: ${{ env.CI_TOOL_PATH }}
+      BUILD_SCRIPTS_PATH: ${{ env.BUILD_SCRIPTS_PATH }}
+      BUILD_SETTINGS_PATH: ${{ env.BUILD_SETTINGS_PATH }}
 
   build-matrix:
     runs-on: ubuntu-latest
@@ -59,13 +58,14 @@ jobs:
 
   Static-analysis:
     needs: build-matrix
+    strategy:
+      matrix: ${{ fromJSON(needs.build-matrix.outputs.matrix) }}
     uses: ./.github/workflows/code_verification.yml
     with:
       PROJECT_NAME: ${{ matrix.PROJECT_NAME }}
       PROJECT_DIR: ${{ matrix.PROJECT_DIR }}
-      STATIC_ANALYSIS_SCRIPTS_PATH: $STATIC_ANALYSIS_SCRIPTS_PATH
-      STATIC_ANALYSIS_SETTINGS_PATH: $STATIC_ANALYSIS_SETTINGS_PATH
-    strategy:
-      matrix: ${{ fromJSON(needs.build-matrix.outputs.matrix) }}
+      STATIC_ANALYSIS_SCRIPTS_PATH: ${{ env.STATIC_ANALYSIS_SCRIPTS_PATH }}
+      STATIC_ANALYSIS_SETTINGS_PATH: ${{ env.STATIC_ANALYSIS_SETTINGS_PATH }}
+
 
 
