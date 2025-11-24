@@ -36,7 +36,7 @@ jobs:
         id: changed-files
         uses: tj-actions/changed-files@v47
         with:
-          files_yaml_form_source_file: ${{ env.CHANGED_FILES_RULES }}
+          files_yaml_from_source_file: ${{ env.CHANGED_FILES_RULES }}
       - name: Generate matrix info including which pipeline should be triggered
         id: gen-matrix
         run: |
