@@ -39,7 +39,7 @@ jobs:
       - uses: actions/checkout@v4
       - id: set-matrix
         run: |
-          MATRIX_JSON=$(cat projects_file.json)
+          MATRIX_JSON=$(cat .github/projects_file.json)
           echo "matrix=$MATRIX_JSON" >> "$GITHUB_OUTPUT"
 
   per-project-job:
