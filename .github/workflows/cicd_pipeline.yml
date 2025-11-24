@@ -14,6 +14,34 @@ env:
   STATIC_ANALYSIS_SETTINGS_PATH: ci/settings/static_analysis
 
 jobs:
+  detect-changes:
+    runs-on: self-hosted
+    outputs:
+      matrix: ${{ steps.gen-matrix.outputs.matrix }}
+    env:
+      PROJECTS_FILE: .github/projects_file.json
+      CHANGED_FILES_RULES: changed-files.yml
+    steps:
+      - uses: actions/checkout@v4
+      - name: install jq
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+      - name: Generate changed-files rules from PROJECTS_FILE
+        run: ./github/scripts/generate-changed-files-rules.sh
+        shell: bash
+      - name: Get all related files that have changed
+        id: changed-files
+        uses: tj-actions/changed-files@v47
+        with:
+          files_yaml_form_source_file: ${{ env.CHANGED_FILES_RULES }}
+      - name: Generate matrix info including which pipeline should be triggered
+        id: gen-matrix
+        run: ./github/scripts/generate-matrix.sh
+        env:
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+          CHANGED_KEYS: ${{ steps.changed-files.outputs.changed_keys }}
+        shell: bash
 
   build-job:
     name: Build | ${{ matrix.target_os_upper }}
@@ -30,35 +58,10 @@ jobs:
       BUILD_SCRIPTS_PATH: ${{ env.BUILD_SCRIPTS_PATH }}
       BUILD_SETTINGS_PATH: ${{ env.BUILD_SETTINGS_PATH }}
 
-  build-matrix:
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-    steps:
-      - uses: actions/checkout@v4
-      - id: set-matrix
-        run: |
-          MATRIX_JSON=$(cat .github/projects_file.json)
-          echo "matrix=$MATRIX_JSON" >> "$GITHUB_OUTPUT"
-
-  per-project-job:
-    needs: build-matrix
-    runs-on: ubuntu-latest
-    strategy:
-      matrix: ${{ fromJSON(needs.build-matrix.outputs.matrix) }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Show project info
-        run: |
-          echo "project_id   = ${{ matrix.project_id }}"
-          echo "name         = ${{ matrix.PROJECT_NAME }}"
-          echo "dir          = ${{ matrix.PROJECT_DIR }}"
-          echo "triggers     = ${{ join(matrix.FILES_CHANGED_TRIGGER, ', ') }}"
-
   Static-analysis:
-    needs: build-matrix
+    needs: detect-changes
     strategy:
-      matrix: ${{ fromJSON(needs.build-matrix.outputs.matrix) }}
+      matrix: ${{ fromJSON(needs.detect-changes.outputs.matrix) }}
     uses: owner/repo/.github/workflows/code_verification.yml
     with:
       PROJECT_NAME: ${{ matrix.PROJECT_NAME }}
