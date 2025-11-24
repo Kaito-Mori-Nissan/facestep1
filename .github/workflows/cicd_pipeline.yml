@@ -63,14 +63,16 @@ jobs:
 
   Static-analysis:
     needs: detect-changes
+    runs-on: ubuntu-latest
     strategy:
       matrix: ${{ fromJSON(needs.detect-changes.outputs.matrix) }}
-    uses: ./.github/workflows/code_verification.yml
-    with:
-      PROJECT_NAME: ${{ matrix.PROJECT_NAME }}
-      PROJECT_DIR: ${{ matrix.PROJECT_DIR }}
-      STATIC_ANALYSIS_SCRIPTS_PATH: ci/script/static_analysis
-      STATIC_ANALYSIS_SETTINGS_PATH: ci/settings/static_analysis
+    steps:
+      - uses: ./.github/workflows/code_verification.yml
+        with:
+          PROJECT_NAME: ${{ matrix.PROJECT_NAME }}
+          PROJECT_DIR: ${{ matrix.PROJECT_DIR }}
+          STATIC_ANALYSIS_SCRIPTS_PATH: ci/script/static_analysis
+          STATIC_ANALYSIS_SETTINGS_PATH: ci/settings/static_analysis
 
 
 
