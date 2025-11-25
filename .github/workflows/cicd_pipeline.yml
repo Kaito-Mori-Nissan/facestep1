@@ -71,7 +71,6 @@ jobs:
 
   static-analysis-jobs-summary-report:
     needs: static-analysis
-    runs-on: ubuntu-latest # PCU-POLYSPACE-EC2
     if: |
       startsWith(github.ref, 'ref/heads/release/') ||
       startsWith(github.ref, 'ref/heads/develop/') ||
@@ -85,5 +84,4 @@ jobs:
 
   unit-test:
     needs: static-analysis-jobs-summary-report
-    runs-on: ubuntu-latest
     uses: ./.github/workflows/unit_test_exection_job.yml
