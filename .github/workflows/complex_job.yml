@@ -8,7 +8,6 @@ jobs:
     strategy:
       matrix:
         target: [sample1, sample2, sample3]
-      max-parallel: 1
     environment: ${{ matrix.target }}
     steps:
       - run: echo "${{ matrix.target }}"
