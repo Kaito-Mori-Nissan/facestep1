@@ -1,0 +1,13 @@
+name: Complex job
+
+on: push
+
+jobs:
+  complex-job:
+    runs-on: self-hosted
+    strategy:
+      matrix:
+        token: [sample1, sample2. sample3]
+    steps:
+      - run: echo "{{ matrix.token }}"
+        shell: bash
