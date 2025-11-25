@@ -1,0 +1,18 @@
+name: Static Analysis Summary
+description: Run summary scripts
+inputs:
+  STATIC_ANALYSIS_SCRIPTS_PATH:
+    description: 'Path to static analysis scripts'
+    required: true
+    type: string
+runs:
+  using: 'composite'
+  steps:
+    - shell: bash
+      run: |
+        echo "Run ID is $GITHUB_RUN_ID"
+        bash "${{ inputs.STATIC_ANALYSIS_SCRIPTS_PATH }}/get_failed_job_info.sh" "${GITHUB_RUN_ID}"
+        bash "${{ inputs.STATIC_ANALYSIS_SCRIPTS_PATH }}/get_execution_time_info.sh" "${GITHUB_RUN_ID}"
+        bash "${{ inputs.STATIC_ANALYSIS_SCRIPTS_PATH }}/summarize_error_count.sh" "${GITHUB_RUN_ID}"
+        ls -l
+        

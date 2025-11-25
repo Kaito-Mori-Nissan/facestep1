@@ -61,7 +61,7 @@ jobs:
       BUILD_SCRIPTS_PATH: ci/script/build
       BUILD_SETTINGS_PATH: ci/settings/build
 
-  Static-analysis:
+  static-analysis:
     needs: detect-changes
     uses: ./.github/workflows/code_verification.yml
     with:
@@ -69,4 +69,21 @@ jobs:
       STATIC_ANALYSIS_SCRIPTS_PATH: ci/script/static_analysis
       STATIC_ANALYSIS_SETTINGS_PATH: ci/settings/static_analysis
 
+  static-analysis-jobs-summary-report:
+    needs: static-analysis
+    runs-on: ubuntu-latest # PCU-POLYSPACE-EC2
+    if: |
+      startsWith(github.ref, 'ref/heads/release/') ||
+      startsWith(github.ref, 'ref/heads/develop/') ||
+      startsWith(github.ref, 'ref/heads/ci_test_branch/') ||
+      startsWith(github.ref, 'refs/heads/feature/') ||
+      startsWith(github.ref, 'refs/heads/ci/')
+    uses: ./.github/workflows/static_analysis_summary.yml
+    with:
+      STATIC_ANALYSIS_SCRIPTS_PATH: ci/script/static_analysis
 
+
+  unit-test:
+    needs: static-analysis-jobs-summary-report
+    runs-on: ubuntu-latest
+    uses: ./.github/workflows/unit_test_exection_job.yml

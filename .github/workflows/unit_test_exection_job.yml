@@ -1,0 +1,31 @@
+name: Unit Test
+
+jobs:
+  unit-test-execution:
+    strategy:
+      matrix:
+        APPLICATION_NAME: ["--app napp_ract_acio", "--app napp_ract_hvac", "--app napp_ract_rlu",
+                           "--app napp_ract_res", "--app napp_ract_rhl", "--app napp_ract_rps",
+                           "--app napp_ract_rpu", "--app napp_ract_rtu", "--app napp_rnot_bn",
+                           "--app napp_rnot_cm", "--app napp_rnot_ca", "--app napp_rnot_idsr",
+                           "--app napp_rnot_sa", "--app napp_rnot_za", "--app napp_ucd",
+                           "--app napp_rdm"]
+    runs-on: ubuntu-latest # RUNNER_10.18.93.85
+    container:
+      image: face_step1:v4
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Regression Test
+        shell: bash
+        run: |
+          cd ./ci/script/regression_test
+          chmod a+x regression_test.sh
+          ./regression_test.sh ${{ matrix.APPLICATION_NAME }}
+      - run: python3 summary_gtest.py
+        shell: bash
+      - name: Upload Unit Test Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-artifacts-${{ github.run_id }}-${{ matrix.APPLICATION_NAME }}
+          path: /build/gitlab/pcu/face_steps1/regression_results/* #変更必要
+        

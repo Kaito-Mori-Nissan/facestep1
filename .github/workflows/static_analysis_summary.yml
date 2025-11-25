@@ -1,0 +1,29 @@
+name: Static Analysis Summary
+
+on:
+  workflow_call:
+    inputs:
+      STATIC_ANALYSIS_SCRIPTS_PATH:
+        required: true
+        type: string
+
+jobs:
+  static-analysis-summary:
+    name: Static Analysis Summary
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run summary script
+        uses: ./.github/actions/static-analysis-summary
+        with:
+          STATIC_ANALYSIS_SCRIPTS_PATH: ${{ inputs.STATIC_ANALYSIS_SCRIPTS_PATH }}
+      - name: Upload Static Analysis Summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: static-analysis-summary-${{ github.run_id }}
+          path: |
+            ./failed_jobs_info_${{ github.run_id }}.csv
+            ./pipeline_exection_time_info_${{ github.run_id }}.csv
+            ./error_count_summary_${{ github.run_id }}.csv
+          retention-days: 30
