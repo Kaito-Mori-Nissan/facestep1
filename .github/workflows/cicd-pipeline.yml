@@ -2,6 +2,97 @@ name: cicd pipeline
 
 on: push
 
-jobs:
-  
+env:
+  CI_TOOL_PATH: ci/script
+  CI_SETTINGS_PATH: ci/settings
 
+  BUILD_SCRIPTS_PATH: ci/script/build
+  BUILD_SETTINGS_PATH: ci/settings/build
+
+  STATIC_ANALYSIS_SCRIPTS_PATH: ci/script/static_analysis
+  STATIC_ANALYSIS_SETTINGS_PATH: ci/settings/static_analysis
+
+jobs:
+  data-preparation:
+    runs-on: self-hosted
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    env:
+      PROJECTS_FILE: .github/projects_file.json
+      CHANGED_FILES_RULES: change-files.json
+    steps:
+      - uses: actions/checkout@v4
+      - name: install jq
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+      - name: Extract require data to generate changed files config
+        shell: bash
+        run: |
+          jq 'map_values(.FILES_CHANGED_TRIGGER)' "$STRUCTURE_FILE" > "$CHANGED_FILES_RULES"
+          cat "$CHANGED_FILES_RULES"
+
+      - name: Get all related files that have changed
+        id: changed-files-yaml
+        uses: tj-actions/changed-files@v47
+        with:
+          files_json_from_source_file: ${{ env.CHANGED_FILES_RULES }}
+      - name: Generate matrix info including which pipeline should be triggered
+        id: gen-matrix
+        shell: bash
+        run: |
+          if [[ ${{ github.ref_name }} =~ ^release ]]; then
+            echo "Run release workflow..."
+            DEPLOY_TARGET=$(jq -r 'keys | join(" ")' "$STRUCTURE_FILE")
+          else
+            echo "The following projects will be triggered."
+            DEPLOY_TARGET=${{ steps.changed-files-yaml.outputs.changed_keys }}
+            echo "$DEPLOY_TARGET"
+          fi
+          MATRIX_JSON=$(jq -c --arg targets "$DEPLOY_TARGET" '
+            ($targets | split(" ")) as $target_list |
+            to_entries |
+            map(select(.key as $k | $target_list | index($k))) |
+            map({PROJECT_NAME: .value.PROJECT_NAME, PROJECT_DIR: .value.PROJECT_DIR})
+          ' "$STRUCTURE_FILE")
+          echo "matrix=$MATRIX_JSON" >> $GITHUB_OUTPUT
+
+
+  build-job:
+    name: Build - ${{ matrix.target_os }}
+    needs: data-preparation
+    runs-on: self-hosted
+    strategy:
+      matrix:
+        target_os: [linux, windows, qnx]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build for Linux
+        if: matrix.target_os == 'linux'
+        shell: bash
+        run: |
+          echo "Building for Linux..."
+          echo "Executing build job for Linux environment by default."
+          : # bash ${{ env.BUILD_SCRIPTS_PATH }}/make.sh
+          : # bash ${{ env.BUILD_SCRIPTS_PATH }}/install_linux.sh
+      - name: Build for Windows
+        if: matrix.target_os == 'windows'
+        shell: bash
+        run: |
+          echo "Building for Windows..."
+      - name: Build for QNX
+        if: matrix.target_os == 'qnx'
+        shell: bash
+        run: |
+          echo "Building for QNX..."
+          : # source /home/xw2/qnx710/qnxsdp-env.sh
+          echo "Executing build job for QNX environment."
+          : # ./make.sh --qnx
+          : # echo "Completed build.. Packaging artifacts"
+          : # bash ${{ env.BUILD_SCRIPTS_PATH }}/install_linux.sh
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.target_os }}-img
+          path: ./target/nml/img/*
+          retention-days: 7
