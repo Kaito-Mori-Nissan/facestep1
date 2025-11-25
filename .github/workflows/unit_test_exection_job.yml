@@ -1,5 +1,8 @@
 name: Unit Test
 
+on:
+  workflow_call:
+
 jobs:
   unit-test-execution:
     strategy:
