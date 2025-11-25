@@ -30,7 +30,7 @@ jobs:
       - name: Extract require data to generate changed files config
         shell: bash
         run: |
-          jq 'map_values(.FILES_CHANGED_TRIGGER)' "$STRUCTURE_FILE" > "$CHANGED_FILES_RULES"
+          jq 'map_values(.FILES_CHANGED_TRIGGER)' "$PROJECTS_FILE" > "$CHANGED_FILES_RULES"
           cat "$CHANGED_FILES_RULES"
 
       - name: Get all related files that have changed
@@ -44,7 +44,7 @@ jobs:
         run: |
           if [[ ${{ github.ref_name }} =~ ^release ]]; then
             echo "Run release workflow..."
-            DEPLOY_TARGET=$(jq -r 'keys | join(" ")' "$STRUCTURE_FILE")
+            DEPLOY_TARGET=$(jq -r 'keys | join(" ")' "$PROJECTS_FILE")
           else
             echo "The following projects will be triggered."
             DEPLOY_TARGET=${{ steps.changed-files-yaml.outputs.changed_keys }}
@@ -55,7 +55,7 @@ jobs:
             to_entries |
             map(select(.key as $k | $target_list | index($k))) |
             map({PROJECT_NAME: .value.PROJECT_NAME, PROJECT_DIR: .value.PROJECT_DIR})
-          ' "$STRUCTURE_FILE")
+          ' "$PROJECTS_FILE")
           echo "matrix=$MATRIX_JSON" >> $GITHUB_OUTPUT
 
 
