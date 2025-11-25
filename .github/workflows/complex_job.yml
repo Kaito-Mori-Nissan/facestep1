@@ -7,7 +7,9 @@ jobs:
     runs-on: self-hosted
     strategy:
       matrix:
-        token: [sample1, sample2, sample3]
+        target: [sample1, sample2, sample3]
+      max-parallel: 1
+    environment: ${{ matrix.target }}
     steps:
-      - run: echo "${{ matrix.token }}"
+      - run: echo "${{ matrix.target }}"
         shell: bash
