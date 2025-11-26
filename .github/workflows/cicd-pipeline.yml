@@ -66,6 +66,9 @@ jobs:
     uses: ./.github/workflows/code-verification.yml
     with:
       matrix: ${{ needs.data-preparation.outputs.matrix }}
+      STATIC_ANALYSIS_SCRIPTS_PATH: ${{ vars.STATIC_ANALYSIS_SCRIPTS_PATH }}
+      STATIC_ANALYSIS_SETTINGS_PATH: ${{ vars.STATIC_ANALYSIS_SETTINGS_PATH }}
+
 
   static-analysis-summary:
     needs: static-analysis
