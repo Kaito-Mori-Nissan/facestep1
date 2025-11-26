@@ -16,7 +16,6 @@ jobs:
 
   job:
     runs-on: self-hosted
-    needs: [complex-job]
     continue-on-error: true
     steps:
       - run: echo "job"
