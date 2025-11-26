@@ -12,4 +12,3 @@ jobs:
       matrix: ${{ fromJson(inputs.matrix) }}
     steps:
       - run: echo "done."
-
