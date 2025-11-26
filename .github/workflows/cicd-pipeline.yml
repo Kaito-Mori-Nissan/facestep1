@@ -33,7 +33,6 @@ jobs:
             done
           done
           cat ${{ env.CHANGED_FILES_RULES }}
-        shell: bash
       - name: Get all related files that have changed
         id: changed-files-yaml
         uses: tj-actions/changed-files@v47
@@ -41,6 +40,7 @@ jobs:
           files_yaml_from_source_file: ${{ env.CHANGED_FILES_RULES }}
       - name: Generate matrix info including which pipeline should be triggered
         id: gen-matrix
+        shell: bash
         run: |
           if [[ ${{ github.ref_name }} =~ ^release ]]; then
             DEPLOY_TARGET=$(yq e 'keys | .[]' "$PROJECTS_FILE")
@@ -59,7 +59,6 @@ jobs:
           done
           json="${json%,}]"
           echo "matrix=$json" >> $GITHUB_OUTPUT
-        shell: bash
 
 
   build-job:
