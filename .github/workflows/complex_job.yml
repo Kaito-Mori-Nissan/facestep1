@@ -17,9 +17,10 @@ jobs:
         target: [sample1, sample2, sample3]
       fail-fast: false
     environment: ${{ matrix.target }}
-    if: contains( github.event.inputs.target, matrix.target )
+
     steps:
-      - run: echo "${{ matrix.target }}"
+      - if: contains( github.event.inputs.target, matrix.target )
+        run: echo "${{ matrix.target }}"
         shell: bash
 
   job:
