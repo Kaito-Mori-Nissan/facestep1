@@ -16,7 +16,7 @@ jobs:
           choco install yq -y
       - id: gen-matrix
         run: |
-          $json = yq.exe -o=json '.' "$env:GITHUB_WORKSPACE\.github\workflows\projects_file.yml"
+          $json = yq.exe -o=json '.' "$env:GITHUB_WORKSPACE\.github\projects_file.yml"
           echo "matrix=$json" >> $env:GITHUB_OUTPUT
       - run: |
           echo ${{ steps.gen-matrix.outputs.matrix }}
