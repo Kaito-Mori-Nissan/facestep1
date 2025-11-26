@@ -4,11 +4,24 @@ on: [push]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
+    outputs:
+      matrix: ${{ steps.gen-matrix.outputs.matrix }}
     steps:
       - uses: actions/checkout@v4
-      - name: Make shell script executable
+      # self-hosted runner用
+      - name: Install yq
+        shell: powershell
         run: |
-          chmod +x ./src/shell/sample1.sh
-          chmod +x ./src/shell/sample2.sh
+          choco install yq -y
+      - id: gen-matrix
+        shell: powershell
+        run: |
+          $json = yq.exe -o=json '.' "$env:GITHUB_WORKSPACE\.github\projects_file.yml"
+          echo "matrix=$json" >> $env:GITHUB_OUTPUT
+  job:
+    needs: build
+    uses: ./.github/workflows/child.yml
+    with: 
+      ${{ needs.build.outputs.matrix }}
