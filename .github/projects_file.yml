@@ -6,3 +6,7 @@ include:
   - key: ract_fw
     PROJECT_NAME: "ract_fw"
     PROJECT_DIR: "ccs/lib/ract_fw"
+
+  - key: ucd_fw
+    PROJECT_NAME: "ucd_fw"
+    PROJECT_DIR: "ccs/lib/ucd_fw"
