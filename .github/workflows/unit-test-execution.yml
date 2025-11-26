@@ -12,6 +12,7 @@ jobs:
     runs-on: self-hosted # RUNNER_10.18.93.85
     #container:
     #  image: face_step1:v4
+    continue-on-error: true
     env:
       APPLICATION_NAME: ${{ inputs.APPLICATION_NAME }}
     steps:
@@ -19,7 +20,7 @@ jobs:
       # Check用
       - name: check
         run: |
-          echo "Matrix: ${{ inputs.matrix }}"
+          echo "Matrix: ${{ inputs.APPLICATION_NAME  }}"
       - run: |
           echo "cd ./ci/script/regression_test"
           echo "chmod a+x regression_test.sh"

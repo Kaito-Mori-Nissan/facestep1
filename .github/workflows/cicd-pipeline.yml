@@ -100,6 +100,7 @@ jobs:
     # needs: static-analysis-summary | ifの条件で上のジョブが実行されなかったときにこのジョブがスキップされる
     # environment: 個々のAPPLICATION_NAME
     uses: ./.github/workflows/unit-test-execution.yml
+    needs: static-analysis-summary
     strategy:
       matrix:
         APPLICATION_NAME: [app1, app2, app3]

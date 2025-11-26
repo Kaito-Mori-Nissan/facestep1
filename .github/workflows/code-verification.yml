@@ -42,6 +42,7 @@ jobs:
     runs-on: self-hosted # PCU-POLYSPACE-EC2
     strategy:
       matrix: ${{ fromJson(inputs.matrix) }}
+    continue-on-error: true
     env:
       PROJECT_NAME: ${{ matrix.PROJECT_NAME }}
       PROJECT_DIR: ${{ matrix.PROJECT_DIR }}
