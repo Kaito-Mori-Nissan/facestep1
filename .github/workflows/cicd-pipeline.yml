@@ -9,8 +9,8 @@ jobs:
       matrix: ${{ steps.gen-matrix.outputs.matrix }}
     # continue-on-error: true
     env:
-      PROJECTS_FILE: .github/projects_file.yml
-      CHANGED_FILES_RULES: change-files.yml
+      PROJECTS_FILE: .github/projects_file.json
+      CHANGED_FILES_RULES: change-files.json
     steps:
       - uses: actions/checkout@v4
       - name: install jq
