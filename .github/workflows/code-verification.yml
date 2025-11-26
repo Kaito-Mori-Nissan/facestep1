@@ -11,4 +11,12 @@ jobs:
     strategy:
       matrix: ${{ fromJson(inputs.matrix) }}
     steps:
-      - run: echo "done."
+      - uses: actions/checkout@v4
+      - name: check1
+        env:
+          MATRIX_CONTENT: ${{ toJson(matrix) }}
+        run: echo "$MATRIX_CONTENT"
+      - name: check2
+        run: |
+          echo "PROJECT: ${{ matrix.PROJECT_NAME }}"
+          echo "DIR: ${{ matrix.PROJECT_DIR }}"
