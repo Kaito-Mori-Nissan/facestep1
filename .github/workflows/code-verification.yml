@@ -14,9 +14,9 @@ jobs:
       - uses: actions/checkout@v4
       - name: check1
         env:
-          MATRIX_CONTENT: ${{ toJson(matrix) }}
-        run: echo "$MATRIX_CONTENT"
+          PROJECT_NAME: ${{ matrix.PROJECT_NAME }}
+          PROJECT_DIR: ${{ matrix.PROJECT_DIR }}
       - name: check2
         run: |
-          echo "PROJECT: ${{ matrix.PROJECT_NAME }}"
-          echo "DIR: ${{ matrix.PROJECT_DIR }}"
+          echo "Project Name: $PROJECT_NAME"
+          echo "Project Directory: $PROJECT_DIR"
