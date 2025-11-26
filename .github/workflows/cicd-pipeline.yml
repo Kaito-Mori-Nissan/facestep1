@@ -20,11 +20,8 @@ jobs:
           $json = yq.exe -o=json '.' "$env:GITHUB_WORKSPACE\.github\projects_file.yml"
           echo "matrix=$json" >> $env:GITHUB_OUTPUT
 
-
-
   build-job:
     name: Build - ${{ matrix.target_os }}
-    needs: data-preparation
     runs-on: self-hosted # PCU-BUILD-EC2
     if: startsWith(github.ref_name, 'release/')
     continue-on-error: true

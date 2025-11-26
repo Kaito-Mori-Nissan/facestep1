@@ -34,11 +34,33 @@ jobs:
           : #-report-output-name ${PROJECT_NAME}_BugFinder
       - run: ls -l
       - run: echo "python3 ${STATIC_ANALYSIS_SCRIPTS_PATH}/print_error_count.py bf ./bug-finder-results/Polyspace-Doc/${PROJECT_NAME}_BugFinder.html"
-      - name: check
-        run: echo ${PROJECT_NAME}-${PROJECT_DIR}
       - name: Upload Bug-Finder Report
         uses: actions/upload-artifact@v4
         with:
           name: ${PROJECT_NAME}-Bug-FInder-${{ github.run_id }}
           path: ./bug-finder-results/**/*
+          retention-days: 30
+
+
+  Code-Prover:
+    runs-on: self-hosted # PCU-POLYSPACE-EC2
+    continue-on-error: true
+    strategy:
+      matrix:
+        include: ${{ fromJson(inputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          : #/opt/MathWorks/R2024b/polyspace/bin/polyspace-code-prover-server
+          : #-options-file ${PROJECT_DIR}/app_common_option.txt
+          : #-options-file ${PROJECT_DIR}/app_cp_option.txt
+          : #-options-file ${STATIC_ANALYSIS_SETTINGS_PATH}/code-prover-options.txt
+          : #-report-output-name ${PROJECT_NAME}_CodeProver
+      - run: ls -l
+      - run: echo "python3 ${STATIC_ANALYSIS_SCRIPTS_PATH}/print_error_count.py cp ./code-prover-results/Polyspace-Doc/${PROJECT_NAME}_CodeProver.html"
+      - name: Upload Code-Prover Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${PROJECT_NAME}-Code-Prover-${{ github.run_id }}
+          path: ./code-prover-results/**/*
           retention-days: 30
