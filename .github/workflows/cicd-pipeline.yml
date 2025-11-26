@@ -72,6 +72,12 @@ jobs:
     needs: static-analysis
     runs-on: self-hosted # PCU-POLYSPACE-EC2
     continue-on-error: true
+    if: |
+      startsWith(github.ref, 'ref/heads/release/') ||
+      startsWith(github.ref, 'ref/heads/develop/') ||
+      startsWith(github.ref, 'ref/heads/ci_test_branch/') ||
+      startsWith(github.ref, 'refs/heads/feature/') ||
+      startsWith(github.ref, 'refs/heads/ci/')
     steps:
       - run: |
           echo "Run ID is ${{ github.run_id }}"
@@ -89,3 +95,13 @@ jobs:
             ./pipeline_execution_time_info_${{ github.run_id }}.csv
             ./error_count_summary_${{ github.run_id }}.csv
           retention-days: 30
+
+  unit-test:
+    needs: static-analysis-summary
+    # environment: 個々のAPPLICATION_NAME
+    uses: ./.github/workflows/unit-test-execution.yml
+    strategy:
+      matrix:
+        APPLICATION_NAME: [app1, app2, app3]
+    with:
+      APPLICATION_NAME: ${{ matrix.APPLICATION_NAME }}

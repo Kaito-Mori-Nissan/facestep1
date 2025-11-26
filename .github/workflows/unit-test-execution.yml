@@ -1,0 +1,32 @@
+name: Unit Test Execution
+
+on:
+  workflow_call:
+    inputs:
+      matrix:
+        required: true
+        type: string
+
+jobs:
+  unit-test-execution:
+    runs-on: self-hosted # RUNNER_10.18.93.85
+    #container:
+    #  image: face_step1:v4
+    env:
+      APPLICATION_NAME: ${{ inputs.matrix.APPLICATION_NAME }}
+    steps:
+      - uses: actions/checkout@v4
+      # Check用
+      - name: check
+        run: |
+          echo "Matrix: ${{ inputs.matrix }}"
+      - run: |
+          echo "cd ./ci/script/regression_test"
+          echo "chmod a+x regression_test.sh"
+          echo "./regression_test.sh ${{ inputs.matrix.APPLICATION_NAME }}"
+      - run: echo python3 summary_gtest.py
+      - name: Upload Unit Test Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-artifacts-${{ github.run_id }}-${{ inputs.matrix.APPLICATION_NAME }}
+          path: /build/gitlab/pcu/face_steps1/regression_results/* #変更必要
