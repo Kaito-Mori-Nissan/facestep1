@@ -15,11 +15,11 @@ jobs:
         run: |
           choco install yq -y
       - id: gen-matrix
+        shell: powershell
         run: |
           $json = yq.exe -o=json '.' "$env:GITHUB_WORKSPACE\.github\projects_file.yml"
           echo "matrix=$json" >> $env:GITHUB_OUTPUT
-      - run: |
-          echo ${{ steps.gen-matrix.outputs.matrix }}
+
 
 
   build-job:
