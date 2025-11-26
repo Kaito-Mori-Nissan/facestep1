@@ -10,10 +10,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install yq
-        shell: bash
+        shell: powershell
         run: |
-          sudo apt-get update
-          sudo apt-get install -y yq
+          choco install yq -y
       - id: gen-matrix
         run: |
           json=$(yq -o=json '.' .github/workflows/projects_file.yml)
