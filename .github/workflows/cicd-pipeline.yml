@@ -101,6 +101,7 @@ jobs:
     # environment: 個々のAPPLICATION_NAME
     uses: ./.github/workflows/unit-test-execution.yml
     strategy:
-      matrix: [app1, app2, app3]
+      matrix: 
+        APPLICATION_NAME: [app1, app2, app3]
     with:
-      APPLICATION_NAME: ${{ toJson(matrix) }}
+      APPLICATION_NAME: ${{ toJson(matrix.APPLICATION_NAME) }}
