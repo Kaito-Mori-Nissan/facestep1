@@ -17,6 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
+    continue-on-error: true
     env:
       PROJECTS_FILE: .github/projects_file.json
       CHANGED_FILES_RULES: change-files.json
@@ -32,7 +33,6 @@ jobs:
         run: |
           jq 'map_values(.FILES_CHANGED_TRIGGER)' "$PROJECTS_FILE" > "$CHANGED_FILES_RULES"
           cat "$CHANGED_FILES_RULES"
-
       - name: Get all related files that have changed
         id: changed-files-yaml
         uses: tj-actions/changed-files@v47
@@ -62,7 +62,8 @@ jobs:
   build-job:
     name: Build - ${{ matrix.target_os }}
     needs: data-preparation
-    runs-on: self-hosted
+    runs-on: self-hosted # PCU-BUILD-EC2
+    continue-on-error: true
     strategy:
       matrix:
         target_os: [linux, windows, qnx]
@@ -97,3 +98,39 @@ jobs:
           name: ${{ matrix.target_os }}-img
           path: ./target/nml/img/*
           retention-days: 7
+
+
+  static-analysis:
+    needs: data-preparation
+    uses: ./.github/workflows/code-verification.yml
+    with:
+      PROJECT_NAME: ${{ matrix.pair.PROJECT_NAME }}
+      PROJECT_DIR: ${{ matrix.pair.PROJECT_DIR }}
+      STATIC_ANALYSIS_SCRIPTS_PATH: ${{ env.STATIC_ANALYSIS_SCRIPTS_PATH }}
+      STATIC_ANALYSIS_SETTINGS_PATH: ${{ env.STATIC_ANALYSIS_SETTINGS_PATH }}
+    strategy:
+      matrix:
+        include: ${{ fromJson(needs.data-preparation.outputs.matrix) }}
+
+
+  static-analysis-summary:
+    needs: static-analysis
+    runs-on: self-hosted # PCU-POLYSPACE-EC2
+    continue-on-error: true
+    steps:
+      - run: |
+          echo "Run ID is ${{ github.run_id }}"
+          : # bash ${{STATIC_ANALYSIS_SCRIPTS_PATH}}/get_failed_job_info.sh ${{ github.run_id }}
+          : # bash ${{STATIC_ANALYSIS_SCRIPTS_PATH}}/get_execution_time_info.sh ${{ github.run_id }}
+          : # bash ${{ STATIC_ANALYSIS_SCRIPTS_PATH}}/summarize_error_count.sh ${{ github.run_id }}
+          : # ls -l
+        shell: bash
+      - name: Upload Static Analysis Summary Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: static-analysis-summary-report
+          path: |
+            ./failed_jobs_info_${{ github.run_id }}.csv
+            ./pipeline_execution_time_info_${{ github.run_id }}.csv
+            ./error_count_summary_${{ github.run_id }}.csv
+          retention-days: 30
