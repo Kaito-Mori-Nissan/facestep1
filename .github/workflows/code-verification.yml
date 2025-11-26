@@ -17,5 +17,5 @@ jobs:
           PROJECT_NAME: ${{ matrix.PROJECT_NAME }}
           PROJECT_DIR: ${{ matrix.PROJECT_DIR }}
         run: |
-          echo "Project Name: $PROJECT_NAME"
-          echo "Project Directory: $PROJECT_DIR"
+          echo "Project Name: ${{ env.PROJECT_NAME  }}"
+          echo "Project Directory: ${{ env.PROJECT_DIR }}"
