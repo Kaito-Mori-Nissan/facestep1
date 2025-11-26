@@ -21,12 +21,13 @@ jobs:
           echo "Project Name: ${{ env.PROJECT_NAME  }}"
           echo "Project Directory: ${{ env.PROJECT_DIR }}"
       - run: |
-          : #/opt/MathWorks/R2024b/polyspace/bin/polyspace-bug-finder-server
-          : #-options-file ${{ env.PROJECT_DIR }}/app_common_option.txt
-          : #-options-file ${{ env.PROJECT_DIR }}/app_bf_option.txt
-          : #-options-file ${{ vars.STATIC_ANALYSIS_SETTINGS_PATH }}/bug-finder-options.txt
-          : #-checkers-selection-file ${{ vars.STATIC_ANALYSIS_SETTINGS_PATH }}/custom_config.xml
-          : #-report-output-name ${{ env.PROJECT_NAME }}_BugFinder
+          echo "Executing real part"
+          # /opt/MathWorks/R2024b/polyspace/bin/polyspace-bug-finder-server
+          # -options-file ${{ env.PROJECT_DIR }}/app_common_option.txt
+          # -options-file ${{ env.PROJECT_DIR }}/app_bf_option.txt
+          # -options-file ${{ vars.STATIC_ANALYSIS_SETTINGS_PATH }}/bug-finder-options.txt
+          # -checkers-selection-file ${{ vars.STATIC_ANALYSIS_SETTINGS_PATH }}/custom_config.xml
+          # -report-output-name ${{ env.PROJECT_NAME }}_BugFinder
       - run: ls -l
       - run: echo "python3 ${{ vars.STATIC_ANALYSIS_SCRIPTS_PATH }}/print_error_count.py bf ./bug-finder-results/Polyspace-Doc/${{ env.PROJECT_NAME }}_BugFinder.html"
       - name: Upload Bug-Finder Report
