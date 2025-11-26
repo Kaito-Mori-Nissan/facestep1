@@ -1,15 +1,30 @@
 name: Complex job
 
-on: push
+on: 
+  push
+  workflow_dispatch:
+    inputs:
+      targets:
+        description: "実行するターゲット（カンマ区切り: job1,job3 など）"
+        required: true
+        default: "sample1, sample2, sample3"
 
 jobs:
   complex-job:
     runs-on: self-hosted
+    continue-on-error: true
     strategy:
       matrix:
         target: [sample1, sample2, sample3]
+      fail-fast: false
     environment: ${{ matrix.target }}
+    if: contains( github.event.inputs.targets, matrix.target )
     steps:
       - run: echo "${{ matrix.target }}"
         shell: bash
 
+  job:
+    runs-on: self-hosted
+    needs: [complex-job]
+    steps:
+      - run: echo "job"
