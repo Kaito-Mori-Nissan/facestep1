@@ -1,7 +1,6 @@
 name: Complex job
 
 on: 
-  push
   workflow_dispatch:
     inputs:
       targets:
