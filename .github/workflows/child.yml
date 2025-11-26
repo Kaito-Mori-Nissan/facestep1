@@ -11,4 +11,7 @@ jobs:
     strategy:
       matrix: ${{ fromJson(inputs.matrix) }}
     steps:
-      - run: echo "done."
+      - run: |
+          echo "done."
+          # echo "not"
+
