@@ -7,18 +7,46 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.gen-matrix.outputs.matrix }}
+    # continue-on-error: true
+    env:
+      PROJECTS_FILE: .github/projects_file.json
+      CHANGED_FILES_RULES: change-files.json
     steps:
       - uses: actions/checkout@v4
-      - name: Install yq
+      - name: install jq
+        shell: bash
         run: |
-          sudo update
-          sudo apt-get install -y yq
-      - id: gen-matrix
+          sudo apt-get update
+          sudo apt-get install -y jq
+      - name: Extract require data to generate changed files config
+        shell: bash
         run: |
-          json=$(yq -o=json '.' .github/workflows/projects_file.yml)
-          echo "matrix=${json}" >> "$GITHUB_OUTPUT"
-      - run: |
-          echo ${{ steps.gen-matrix.outputs.matrix }}
+          jq 'map_values(.FILES_CHANGED_TRIGGER)' "$PROJECTS_FILE" > "$CHANGED_FILES_RULES"
+          cat "$CHANGED_FILES_RULES"
+      - name: Get all related files that have changed
+        id: changed-files-yaml
+        uses: tj-actions/changed-files@v47
+        with:
+          files_json_from_source_file: ${{ env.CHANGED_FILES_RULES }}
+      - name: Generate matrix info including which pipeline should be triggered
+        id: gen-matrix
+        shell: bash
+        run: |
+          if [[ ${{ github.ref_name }} =~ ^release ]]; then
+            echo "Run release workflow..."
+            DEPLOY_TARGET=$(jq -r 'keys | join(" ")' "$PROJECTS_FILE")
+          else
+            echo "The following projects will be triggered."
+            DEPLOY_TARGET=${{ steps.changed-files-yaml.outputs.changed_keys }}
+            echo "$DEPLOY_TARGET"
+          fi
+          MATRIX_JSON=$(jq -c --arg targets "$DEPLOY_TARGET" '
+            ($targets | split(" ")) as $target_list |
+            to_entries |
+            map(select(.key as $k | $target_list | index($k))) |
+            map({PROJECT_NAME: .value.PROJECT_NAME, PROJECT_DIR: .value.PROJECT_DIR})
+          ' "$PROJECTS_FILE")
+          echo "matrix=$MATRIX_JSON" >> $GITHUB_OUTPUT
 
 
   build-job:
@@ -67,9 +95,13 @@ jobs:
     needs: data-preparation
     uses: ./.github/workflows/code-verification.yml
     with:
-      matrix: ${{ needs.data-preparation.outputs.matrix }}
+      PROJECT_NAME: ${{ matrix.pair.PROJECT_NAME }}
+      PROJECT_DIR: ${{ matrix.pair.PROJECT_DIR }}
       STATIC_ANALYSIS_SCRIPTS_PATH: ${{ vars.STATIC_ANALYSIS_SCRIPTS_PATH }}
       STATIC_ANALYSIS_SETTINGS_PATH: ${{ vars.STATIC_ANALYSIS_SETTINGS_PATH }}
+    strategy:
+      matrix:
+        include: ${{ fromJson(needs.data-preparation.outputs.matrix) }}
 
 
   static-analysis-summary:
