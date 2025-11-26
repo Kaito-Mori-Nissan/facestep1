@@ -9,20 +9,31 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     continue-on-error: true
     env:
-      PROJECTS_FILE: .github/projects_file.json
-      CHANGED_FILES_RULES: change-files.json
+      PROJECTS_FILE: .github/projects_file.yml
+      CHANGED_FILES_RULES: change-files.yml
     steps:
       - uses: actions/checkout@v4
-      - name: install jq
+      - name: install yq
         shell: bash
         run: |
           sudo apt-get update
-          sudo apt-get install -y jq
+          sudo apt-get install -y yq
       - name: Extract require data to generate changed files config
         shell: bash
         run: |
-          jq 'map_values(.FILES_CHANGED_TRIGGER)' "$PROJECTS_FILE" > "$CHANGED_FILES_RULES"
-          cat "$CHANGED_FILES_RULES"
+          echo "" > "$CHANGED_FILES_RULES"  # Clear output file
+
+          # Get all top-level keys
+          KEYS=$(yq e 'keys | .[]' "$STRUCTURE_FILPROJECTS_FILE")
+
+          for key in $KEYS; do
+            echo "$key:" >> "$CHANGED_FILES_RULES"
+            yq e ".$key.FILES_CHANGED_TRIGGER[]" "$PROJECTS_FILE" | while read pattern; do
+              echo "  - \"$pattern\"" >> "$CHANGED_FILES_RULES"
+            done
+          done
+          cat ${{ env.CHANGED_FILES_RULES }}
+        shell: bash
       - name: Get all related files that have changed
         id: changed-files-yaml
         uses: tj-actions/changed-files@v47
@@ -30,30 +41,32 @@ jobs:
           files_yaml_from_source_file: ${{ env.CHANGED_FILES_RULES }}
       - name: Generate matrix info including which pipeline should be triggered
         id: gen-matrix
-        shell: bash
         run: |
           if [[ ${{ github.ref_name }} =~ ^release ]]; then
+            DEPLOY_TARGET=$(yq e 'keys | .[]' "$PROJECTS_FILE")
             echo "Run release workflow..."
-            DEPLOY_TARGET=$(jq -r 'keys | join(" ")' "$PROJECTS_FILE")
+            echo "All projects will be selected as deploy target."
           else
-            echo "The following projects will be triggered."
             DEPLOY_TARGET=${{ steps.changed-files-yaml.outputs.changed_keys }}
+            echo "The following projects will be triggered."
             echo "$DEPLOY_TARGET"
           fi
-          MATRIX_JSON=$(jq -c --arg targets "$DEPLOY_TARGET" '
-            ($targets | split(" ")) as $target_list |
-            to_entries |
-            map(select(.key as $k | $target_list | index($k))) |
-            map({PROJECT_NAME: .value.PROJECT_NAME, PROJECT_DIR: .value.PROJECT_DIR})
-          ' "$PROJECTS_FILE")
-          echo "matrix=$MATRIX_JSON" >> $GITHUB_OUTPUT
+          json="["
+          for key in $DEPLOY_TARGET; do
+            PROJECT_NAME=$(yq e ".${key}.PROJECT_NAME" ${{ env.PROJECTS_FILE }})
+            PROJECT_DIR=$(yq e ".${key}.PROJECT_DIR" ${{ env.PROJECTS_FILE }})
+            json="${json}{\"PROJECT_NAME\":\"$PROJECT_NAME\",\"PROJECT_DIR\":\"$PROJECT_DIR\"},"
+          done
+          json="${json%,}]"
+          echo "matrix=$json" >> $GITHUB_OUTPUT
+        shell: bash
 
 
   build-job:
     name: Build - ${{ matrix.target_os }}
     needs: data-preparation
     runs-on: self-hosted # PCU-BUILD-EC2
-    if: startsWith(github.ref, 'refs/heads/release')
+    if: startsWith(github.ref_name, 'release/')
     continue-on-error: true
     strategy:
       matrix:
