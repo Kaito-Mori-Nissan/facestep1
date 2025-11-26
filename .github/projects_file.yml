@@ -1,0 +1,6 @@
+include:
+  - PROJECT_NAME: "fod_manager"
+    PROJECT_DIR: "ccs/fod"
+    
+  -PROJECT_NAME: "ract_fw"
+    PROJECT_DIR: "ccs/lib/ract_fw"
