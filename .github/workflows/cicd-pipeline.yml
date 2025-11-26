@@ -106,8 +106,8 @@ jobs:
     with:
       PROJECT_NAME: ${{ matrix.pair.PROJECT_NAME }}
       PROJECT_DIR: ${{ matrix.pair.PROJECT_DIR }}
-      STATIC_ANALYSIS_SCRIPTS_PATH: ${ env.STATIC_ANALYSIS_SCRIPTS_PATH }
-      STATIC_ANALYSIS_SETTINGS_PATH: ${ env.STATIC_ANALYSIS_SETTINGS_PATH }
+      STATIC_ANALYSIS_SCRIPTS_PATH: ${{ env.STATIC_ANALYSIS_SCRIPTS_PATH }}
+      STATIC_ANALYSIS_SETTINGS_PATH: ${{ env.STATIC_ANALYSIS_SETTINGS_PATH }}
     strategy:
       matrix:
         include: ${{ fromJson(needs.data-preparation.outputs.matrix) }}
@@ -120,9 +120,9 @@ jobs:
     steps:
       - run: |
           echo "Run ID is ${{ github.run_id }}"
-          : # bash ${{STATIC_ANALYSIS_SCRIPTS_PATH}}/get_failed_job_info.sh ${{ github.run_id }}
-          : # bash ${{STATIC_ANALYSIS_SCRIPTS_PATH}}/get_execution_time_info.sh ${{ github.run_id }}
-          : # bash ${{ STATIC_ANALYSIS_SCRIPTS_PATH}}/summarize_error_count.sh ${{ github.run_id }}
+          : # bash ${{ env.STATIC_ANALYSIS_SCRIPTS_PATH}}/get_failed_job_info.sh ${{ github.run_id }}
+          : # bash ${{ env.STATIC_ANALYSIS_SCRIPTS_PATH}}/get_execution_time_info.sh ${{ github.run_id }}
+          : # bash ${{ env.STATIC_ANALYSIS_SCRIPTS_PATH}}/summarize_error_count.sh ${{ github.run_id }}
           : # ls -l
         shell: bash
       - name: Upload Static Analysis Summary Report
