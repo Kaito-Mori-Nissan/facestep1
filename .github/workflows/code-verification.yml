@@ -1,18 +1,7 @@
-name: Code Verification
-
 on:
   workflow_call:
     inputs:
       matrix:
-        description: 'Matrix of projects for static analysis'
-        required: true
-        type: string
-      STATIC_ANALYSIS_SCRIPTS_PATH:
-        description: 'Path to static analysis scripts'
-        required: true
-        type: string
-      STATIC_ANALYSIS_SETTINGS_PATH:
-        description: 'Path to static analysis settings'
         required: true
         type: string
 
