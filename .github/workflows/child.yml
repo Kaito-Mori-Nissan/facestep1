@@ -7,8 +7,9 @@ on:
 
 jobs:
   job1:
-    runs: self-hosted
+    runs-on: self-hosted
     strategy:
       matrix: ${{ fromJson(inputs.matrix) }}
     steps:
       - run: echo "done."
+
