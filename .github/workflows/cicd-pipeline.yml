@@ -97,11 +97,11 @@ jobs:
           retention-days: 30
 
   unit-test:
-    needs: static-analysis-summary
+    # needs: static-analysis-summary | ifの条件で上のジョブが実行されなかったときにこのジョブがスキップされる
     # environment: 個々のAPPLICATION_NAME
     uses: ./.github/workflows/unit-test-execution.yml
     strategy:
-      matrix: 
+      matrix:
         APPLICATION_NAME: [app1, app2, app3]
     with:
       APPLICATION_NAME: ${{ toJson(matrix.APPLICATION_NAME) }}
