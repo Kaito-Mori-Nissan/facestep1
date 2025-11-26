@@ -7,12 +7,8 @@ on:
 
 jobs:
   Bug-Finder:
-    runs-on: self-hosted # PCU-POLYSPACE-EC2
-    continue-on-error: true
+    runs-on: self-hosted
     strategy:
-      matrix:
-        include: ${{ fromJson(inputs.matrix) }}
+      matrix: ${{ fromJson(inputs.matrix) }}
     steps:
-      - uses: actions/checkout@v4
-      - name: check
-        run: echo ${PROJECT_NAME}-${PROJECT_DIR}
+      - run: echo "done."

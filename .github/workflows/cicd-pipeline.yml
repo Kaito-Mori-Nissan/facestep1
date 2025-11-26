@@ -67,7 +67,6 @@ jobs:
     with:
       matrix: ${{ needs.data-preparation.outputs.matrix }}
 
-
   static-analysis-summary:
     needs: static-analysis
     runs-on: self-hosted # PCU-POLYSPACE-EC2
