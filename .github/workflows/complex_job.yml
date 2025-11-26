@@ -13,9 +13,3 @@ jobs:
       - run: echo "${{ matrix.target }}"
         shell: bash
 
-  job3:
-    needs: complex-job
-    if: ${{ needs.complex-job.result == 'success' || needs.complex-job.result == 'skipped' }}
-    runs-on: self-hosted
-    steps:
-      - run: echo "job3"
