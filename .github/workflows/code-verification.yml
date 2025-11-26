@@ -36,3 +36,34 @@ jobs:
           name: ${{ env.PROJECT_NAME }}-Bug-Finder-${{ github.run_id }}
           path: ./bug-finder-results/**/*
           retention-days: 30
+
+
+  Code-Prover:
+    runs-on: self-hosted # PCU-POLYSPACE-EC2
+    strategy:
+      matrix: ${{ fromJson(inputs.matrix) }}
+    env:
+      PROJECT_NAME: ${{ matrix.PROJECT_NAME }}
+      PROJECT_DIR: ${{ matrix.PROJECT_DIR }}
+    steps:
+      - uses: actions/checkout@v4
+      # Check用
+      - name: check
+        run: |
+          echo "Project Name: ${{ env.PROJECT_NAME  }}"
+          echo "Project Directory: ${{ env.PROJECT_DIR }}"
+      - run: |
+          echo "Executing real part"
+          # /opt/MathWorks/R2024b/polyspace/bin/polyspace-code-prover-server
+          # -options-file ${{ env.PROJECT_DIR }}/app_common_option.txt
+          # -options-file ${{ env.PROJECT_DIR }}/app_cp_option.txt
+          # -options-file ${{ vars.STATIC_ANALYSIS_SETTINGS_PATH }}/code-prover-options.txt
+          # -report-output-name ${{ env.PROJECT_NAME }}_CodeProver
+      - run: echo "ls -l"
+      - run: echo "python3 ${{ vars.STATIC_ANALYSIS_SCRIPTS_PATH }}/print_error_count.py cp ./code-prover-results/Polyspace-Doc/${{ env.PROJECT_NAME }}_CodeProver.html"
+      - name: Upload Code-Prover Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PROJECT_NAME }}-Code-Prover-${{ github.run_id }}
+          path: ./code-prover-results/**/*
+          retention-days: 30
