@@ -2,16 +2,6 @@ name: cicd pipeline
 
 on: push
 
-env:
-  CI_TOOL_PATH: ci/script
-  CI_SETTINGS_PATH: ci/settings
-
-  BUILD_SCRIPTS_PATH: ci/script/build
-  BUILD_SETTINGS_PATH: ci/settings/build
-
-  STATIC_ANALYSIS_SCRIPTS_PATH: ci/script/static_analysis
-  STATIC_ANALYSIS_SETTINGS_PATH: ci/settings/static_analysis
-
 jobs:
   data-preparation:
     runs-on: ubuntu-latest
@@ -75,8 +65,8 @@ jobs:
         run: |
           echo "Building for Linux..."
           echo "Executing build job for Linux environment by default."
-          : # bash ${{ env.BUILD_SCRIPTS_PATH }}/make.sh
-          : # bash ${{ env.BUILD_SCRIPTS_PATH }}/install_linux.sh
+          : # bash ${{ vars.BUILD_SCRIPTS_PATH }}/make.sh
+          : # bash ${{ vars.BUILD_SCRIPTS_PATH }}/install_linux.sh
       - name: Build for Windows
         if: matrix.target_os == 'windows'
         shell: bash
@@ -91,7 +81,7 @@ jobs:
           echo "Executing build job for QNX environment."
           : # ./make.sh --qnx
           : # echo "Completed build.. Packaging artifacts"
-          : # bash ${{ env.BUILD_SCRIPTS_PATH }}/install_linux.sh
+          : # bash ${{ vars.BUILD_SCRIPTS_PATH }}/install_linux.sh
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -106,8 +96,8 @@ jobs:
     with:
       PROJECT_NAME: ${{ matrix.pair.PROJECT_NAME }}
       PROJECT_DIR: ${{ matrix.pair.PROJECT_DIR }}
-      STATIC_ANALYSIS_SCRIPTS_PATH: ${{ env.STATIC_ANALYSIS_SCRIPTS_PATH }}
-      STATIC_ANALYSIS_SETTINGS_PATH: ${{ env.STATIC_ANALYSIS_SETTINGS_PATH }}
+      STATIC_ANALYSIS_SCRIPTS_PATH: ${{ vars.STATIC_ANALYSIS_SCRIPTS_PATH }}
+      STATIC_ANALYSIS_SETTINGS_PATH: ${{ vars.STATIC_ANALYSIS_SETTINGS_PATH }}
     strategy:
       matrix:
         include: ${{ fromJson(needs.data-preparation.outputs.matrix) }}
@@ -120,9 +110,9 @@ jobs:
     steps:
       - run: |
           echo "Run ID is ${{ github.run_id }}"
-          : # bash ${{ env.STATIC_ANALYSIS_SCRIPTS_PATH}}/get_failed_job_info.sh ${{ github.run_id }}
-          : # bash ${{ env.STATIC_ANALYSIS_SCRIPTS_PATH}}/get_execution_time_info.sh ${{ github.run_id }}
-          : # bash ${{ env.STATIC_ANALYSIS_SCRIPTS_PATH}}/summarize_error_count.sh ${{ github.run_id }}
+          : # bash ${{ vars.STATIC_ANALYSIS_SCRIPTS_PATH }}/get_failed_job_info.sh ${{ github.run_id }}
+          : # bash ${{ vars.STATIC_ANALYSIS_SCRIPTS_PATH }}/get_execution_time_info.sh ${{ github.run_id }}
+          : # bash ${{ vars.STATIC_ANALYSIS_SCRIPTS_PATH }}/summarize_error_count.sh ${{ github.run_id }}
           : # ls -l
         shell: bash
       - name: Upload Static Analysis Summary Report
