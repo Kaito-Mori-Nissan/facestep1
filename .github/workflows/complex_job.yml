@@ -9,4 +9,4 @@ jobs:
       matrix:
         APPLICATION_NAME: [app1, app2, app3]
     with:
-      APPLICATION_NAME: ${{ toJson(matrix.APPLICATION_NAME }}
+      APPLICATION_NAME: ${{ toJson(matrix.APPLICATION_NAME) }}
