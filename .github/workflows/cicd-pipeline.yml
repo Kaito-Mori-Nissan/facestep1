@@ -106,9 +106,9 @@ jobs:
     uses: ./.github/workflows/unit-test-execution.yml
     # needsで定義したstatic-analysis-summaryの成功/失敗に関わらず実行
     if: always()
+    environment: ${{ matrix.APPLICATION_NAME }}
     strategy:
       matrix:
         APPLICATION_NAME: [app1, app2, app3]
-    environment: ${{ matrix.APPLICATION_NAME }}
     with:
       APPLICATION_NAME: ${{ toJson(matrix.APPLICATION_NAME) }}
