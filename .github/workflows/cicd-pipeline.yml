@@ -102,7 +102,6 @@ jobs:
 
   unit-test:
     needs: static-analysis-summary
-    environment: ${{ matrix.APPLICATION_NAME }}
     uses: ./.github/workflows/unit-test-execution.yml
     # needsで定義したstatic-analysis-summaryの成功/失敗に関わらず実行
     if: always()
