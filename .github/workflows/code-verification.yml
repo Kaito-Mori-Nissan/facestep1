@@ -1,18 +1,19 @@
 on:
   workflow_call:
     inputs:
-      matrix:
+      PROJECT_NAME:
+        required: true
+        type: string
+      PROJECT_DIR:
         required: true
         type: string
 
 jobs:
   Bug-Finder:
     runs-on: self-hosted # PCU-POLYSPACE-EC2
-    strategy:
-      matrix: ${{ fromJson(inputs.matrix) }}
     env:
-      PROJECT_NAME: ${{ matrix.PROJECT_NAME }}
-      PROJECT_DIR: ${{ matrix.PROJECT_DIR }}
+      PROJECT_NAME: ${{ inputs.PROJECT_NAME }}
+      PROJECT_DIR: ${{ inputs.PROJECT_DIR }}
     steps:
       - uses: actions/checkout@v4
       # Check用
@@ -40,12 +41,10 @@ jobs:
 
   Code-Prover:
     runs-on: self-hosted # PCU-POLYSPACE-EC2
-    strategy:
-      matrix: ${{ fromJson(inputs.matrix) }}
     continue-on-error: true
     env:
-      PROJECT_NAME: ${{ matrix.PROJECT_NAME }}
-      PROJECT_DIR: ${{ matrix.PROJECT_DIR }}
+      PROJECT_NAME: ${{ inputs.PROJECT_NAME }}
+      PROJECT_DIR: ${{ inputs.PROJECT_DIR }}
     steps:
       - uses: actions/checkout@v4
       # Check用

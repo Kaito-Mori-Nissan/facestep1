@@ -64,8 +64,12 @@ jobs:
   static-analysis:
     needs: data-preparation
     uses: ./.github/workflows/code-verification.yml
+    strategy:
+      matrix: ${{ fromJson(needs.data-preparation.outputs.matrix) }}
     with:
-      matrix: ${{ needs.data-preparation.outputs.matrix }}
+      PROJECT_NAME: ${{ toJson(matrix.PROJECT_NAME) }}
+      PROJECT_DIR: ${{ toJson(matrix.PROJECT_DIR) }}
+
 
 
   static-analysis-summary:
@@ -97,10 +101,9 @@ jobs:
           retention-days: 30
 
   unit-test:
-    # needs: static-analysis-summary | ifの条件で上のジョブが実行されなかったときにこのジョブがスキップされる
+    needs: static-analysis-summary
     # environment: 個々のAPPLICATION_NAME
     uses: ./.github/workflows/unit-test-execution.yml
-    needs: static-analysis-summary
     if: always()
     strategy:
       matrix:

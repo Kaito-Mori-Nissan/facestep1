@@ -4,54 +4,24 @@ on: push
 
 jobs:
   data-preparation:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     outputs:
-      matrix: ${{ steps.gen-matrix.outputs.matrix }}
-    # continue-on-error: true
-    env:
-      PROJECTS_FILE: .github/projects_file.json
-      CHANGED_FILES_RULES: change-files.json
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - uses: actions/checkout@v4
-      - name: install jq
-        shell: bash
+      # self-hosted runner用
+      - name: Install yq
+        shell: powershell
         run: |
-          sudo apt-get update
-          sudo apt-get install -y jq
-      - name: Extract require data to generate changed files config
-        shell: bash
+          choco install yq -y
+      - id: set-matrix
+        shell: powershell
         run: |
-          jq 'map_values(.FILES_CHANGED_TRIGGER)' "$PROJECTS_FILE" > "$CHANGED_FILES_RULES"
-          cat "$CHANGED_FILES_RULES"
-      - name: Get all related files that have changed
-        id: changed-files-yaml
-        uses: tj-actions/changed-files@v47
-        with:
-          files_json_from_source_file: ${{ env.CHANGED_FILES_RULES }}
-      - name: Generate matrix info including which pipeline should be triggered
-        id: gen-matrix
-        shell: bash
-        run: |
-          if [[ ${{ github.ref_name }} =~ ^release ]]; then
-            echo "Run release workflow..."
-            DEPLOY_TARGET=$(jq -r 'keys | join(" ")' "$PROJECTS_FILE")
-          else
-            echo "The following projects will be triggered."
-            DEPLOY_TARGET=${{ steps.changed-files-yaml.outputs.changed_keys }}
-            echo "$DEPLOY_TARGET"
-          fi
-          MATRIX_JSON=$(jq -c --arg targets "$DEPLOY_TARGET" '
-            ($targets | split(" ")) as $target_list |
-            to_entries |
-            map(select(.key as $k | $target_list | index($k))) |
-            map({PROJECT_NAME: .value.PROJECT_NAME, PROJECT_DIR: .value.PROJECT_DIR})
-          ' "$PROJECTS_FILE")
-          echo "matrix=$MATRIX_JSON" >> $GITHUB_OUTPUT
-
+          $json = yq.exe -o=json '.' "$env:GITHUB_WORKSPACE\.github\projects_file.yml"
+          echo "matrix=$json" >> $env:GITHUB_OUTPUT
 
   build-job:
     name: Build - ${{ matrix.target_os }}
-    needs: data-preparation
     runs-on: self-hosted # PCU-BUILD-EC2
     if: startsWith(github.ref_name, 'release/')
     continue-on-error: true
@@ -95,19 +65,19 @@ jobs:
     needs: data-preparation
     uses: ./.github/workflows/code-verification.yml
     with:
-      PROJECT_NAME: ${{ matrix.pair.PROJECT_NAME }}
-      PROJECT_DIR: ${{ matrix.pair.PROJECT_DIR }}
-      STATIC_ANALYSIS_SCRIPTS_PATH: ${{ vars.STATIC_ANALYSIS_SCRIPTS_PATH }}
-      STATIC_ANALYSIS_SETTINGS_PATH: ${{ vars.STATIC_ANALYSIS_SETTINGS_PATH }}
-    strategy:
-      matrix:
-        include: ${{ fromJson(needs.data-preparation.outputs.matrix) }}
+      matrix: ${{ needs.data-preparation.outputs.matrix }}
 
 
   static-analysis-summary:
     needs: static-analysis
     runs-on: self-hosted # PCU-POLYSPACE-EC2
     continue-on-error: true
+    if: |
+      startsWith(github.ref_name, 'release/') ||
+      startsWith(github.ref_name, 'develop/') ||
+      startsWith(github.ref_name, 'ci_test_branch/') ||
+      startsWith(github.ref_name, 'feature/') ||
+      startsWith(github.ref_name, 'ci/')
     steps:
       - run: |
           echo "Run ID is ${{ github.run_id }}"
@@ -125,3 +95,15 @@ jobs:
             ./pipeline_execution_time_info_${{ github.run_id }}.csv
             ./error_count_summary_${{ github.run_id }}.csv
           retention-days: 30
+
+  unit-test:
+    # needs: static-analysis-summary | ifの条件で上のジョブが実行されなかったときにこのジョブがスキップされる
+    # environment: 個々のAPPLICATION_NAME
+    uses: ./.github/workflows/unit-test-execution.yml
+    needs: static-analysis-summary
+    if: always()
+    strategy:
+      matrix:
+        APPLICATION_NAME: [app1, app2, app3]
+    with:
+      APPLICATION_NAME: ${{ toJson(matrix.APPLICATION_NAME) }}
