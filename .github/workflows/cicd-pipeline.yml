@@ -102,14 +102,12 @@ jobs:
 
   unit-test:
     needs: static-analysis-summary
-    # environment: 個々のAPPLICATION_NAME
+    environment: ${{ matrix.target }}
     uses: ./.github/workflows/unit-test-execution.yml
     # needsで定義したstatic-analysis-summaryの成功/失敗に関わらず実行
     if: always()
     strategy:
       matrix:
-        APPLICATION_NAME: [app1, app2, app3]
+        target: [sample1, sample2, sample3]
     with:
-      APPLICATION_NAME: ${{ toJson(matrix.APPLICATION_NAME) }}
-    environment:
-      name: approval-${{ matrix.APPLICATION_NAME }}
+      APPLICATION_NAME: ${{ toJson(matrix.target) }}
