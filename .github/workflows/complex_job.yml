@@ -4,18 +4,9 @@ on: push
 
 jobs:
   complex-job:
-    runs-on: self-hosted
-    continue-on-error: true
+    uses: ./.github/workflows/child.yml
     strategy:
       matrix:
         APPLICATION_NAME: [app1, app2, app3]
-    environment: ${{ matrix.APPLICATION_NAME }}
-    steps:
-      - run: echo "${{ matrix.APPLICATION_NAME }}"
-        shell: bash
-
-  job:
-    runs-on: self-hosted
-    continue-on-error: true
-    steps:
-      - run: echo "job"
+    with:
+      APPLICATION_NAME: ${{ toJson(matrix.APPLICATION_NAME }}
