@@ -8,10 +8,10 @@ jobs:
     continue-on-error: true
     strategy:
       matrix:
-        target: [sample1, sample2, sample3]
-    environment: ${{ matrix.target }}
+        APPLICATION_NAME: [app1, app2, app3]
+    environment: ${{ matrix.APPLICATION_NAME }}
     steps:
-      - run: echo "${{ matrix.target }}"
+      - run: echo "${{ matrix.APPLICATION_NAME }}"
         shell: bash
 
   job:
