@@ -1,0 +1,16 @@
+on:
+  workflow_call:
+    inputs:
+      APPLICATION_NAME:
+        required: true
+        type: string
+
+jobs:
+  test:
+    runs-on: self-hosted
+    
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "${{ inputs.APPLICATION_NAME }}"
+        shell: bash
+      
