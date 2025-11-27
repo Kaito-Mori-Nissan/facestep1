@@ -1,3 +1,5 @@
+name: Code Verification
+
 on:
   workflow_call:
     inputs:
