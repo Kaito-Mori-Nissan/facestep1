@@ -9,12 +9,12 @@ on:
 
 jobs:
   unit-test-execution:
+    name: ${{ inputs.APPLICATION_NAME }}
     runs-on: self-hosted # RUNNER_10.18.93.85
     #container:
     #  image: face_step1:v4
     continue-on-error: true
-    env:
-      APPLICATION_NAME: ${{ inputs.APPLICATION_NAME }}
+    environment: ${{ inputs.APPLICATION_NAME }}
     steps:
       - uses: actions/checkout@v4
       # Check用
