@@ -20,6 +20,7 @@ jobs:
           $json = yq.exe -o=json '.' "$env:GITHUB_WORKSPACE\.github\projects_file.yml"
           echo "matrix=$json" >> $env:GITHUB_OUTPUT
 
+
   build-job:
     name: Build - ${{ matrix.target_os }}
     runs-on: self-hosted # PCU-BUILD-EC2
@@ -100,6 +101,7 @@ jobs:
             ./error_count_summary_${{ github.run_id }}.csv
           retention-days: 30
 
+
   unit-test:
     needs: static-analysis-summary
     uses: ./.github/workflows/unit-test-execution.yml
@@ -107,6 +109,6 @@ jobs:
     if: always()
     strategy:
       matrix:
-        APPLICATION_NAME: [app1, app2, app3]
+        APPLICATION_NAME: [app1, app2, app3] # ここにアプリケーション名を追加
     with:
       APPLICATION_NAME: ${{ toJson(matrix.APPLICATION_NAME) }}
