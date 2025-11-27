@@ -104,7 +104,7 @@ jobs:
     needs: static-analysis-summary
     # environment: 個々のAPPLICATION_NAME
     uses: ./.github/workflows/unit-test-execution.yml
-    if: always()
+    # if: always()
     strategy:
       matrix:
         APPLICATION_NAME: [app1, app2, app3]
