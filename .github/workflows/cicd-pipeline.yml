@@ -23,6 +23,7 @@ jobs:
 
   build-job:
     name: Build - ${{ matrix.target_os }}
+    needs: data-preparation
     runs-on: self-hosted # PCU-BUILD-EC2
     if: startsWith(github.ref_name, 'release/')
     continue-on-error: true
@@ -63,8 +64,9 @@ jobs:
 
 
   static-analysis:
-    needs: data-preparation
+    needs: build-job
     uses: ./.github/workflows/code-verification.yml
+    if: always()
     strategy:
       matrix: ${{ fromJson(needs.data-preparation.outputs.matrix) }}
     with:
