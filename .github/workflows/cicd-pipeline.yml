@@ -63,7 +63,7 @@ jobs:
 
 
   static-analysis:
-    needs: build-job
+    needs: [build-job, data-preparation]
     uses: ./.github/workflows/code-verification.yml
     if: always()
     strategy:
