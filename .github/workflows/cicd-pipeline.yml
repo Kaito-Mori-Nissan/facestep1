@@ -1,0 +1,115 @@
+name: cicd pipeline
+
+on: push
+
+jobs:
+  data-preparation:
+    runs-on: self-hosted
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      # self-hosted runner用
+      - name: Install yq
+        shell: powershell
+        run: |
+          choco install yq -y
+      - id: set-matrix
+        shell: powershell
+        run: |
+          $json = yq.exe -o=json '.' "$env:GITHUB_WORKSPACE\.github\projects_file.yml"
+          echo "matrix=$json" >> $env:GITHUB_OUTPUT
+
+
+  build-job:
+    needs: data-preparation
+    runs-on: self-hosted # PCU-BUILD-EC2
+    if: startsWith(github.ref_name, 'release/')
+    continue-on-error: true
+    strategy:
+      matrix:
+        target_os: [linux, windows, qnx]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build for Linux
+        if: matrix.target_os == 'linux'
+        shell: bash
+        run: |
+          echo "Building for Linux..."
+          echo "Executing build job for Linux environment by default."
+          : # bash ${{ vars.BUILD_SCRIPTS_PATH }}/make.sh
+          : # bash ${{ vars.BUILD_SCRIPTS_PATH }}/install_linux.sh
+      - name: Build for Windows
+        if: matrix.target_os == 'windows'
+        shell: bash
+        run: |
+          echo "Building for Windows..."
+      - name: Build for QNX
+        if: matrix.target_os == 'qnx'
+        shell: bash
+        run: |
+          echo "Building for QNX..."
+          : # source /home/xw2/qnx710/qnxsdp-env.sh
+          echo "Executing build job for QNX environment."
+          : # ./make.sh --qnx
+          : # echo "Completed build.. Packaging artifacts"
+          : # bash ${{ vars.BUILD_SCRIPTS_PATH }}/install_linux.sh
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.target_os }}-img
+          path: ./target/nml/img/*
+          retention-days: 7
+
+
+  static-analysis:
+    needs: [build-job, data-preparation]
+    uses: ./.github/workflows/code-verification.yml
+    if: always()
+    strategy:
+      matrix: ${{ fromJson(needs.data-preparation.outputs.matrix) }}
+    with:
+      PROJECT_NAME: ${{ toJson(matrix.PROJECT_NAME) }}
+      PROJECT_DIR: ${{ toJson(matrix.PROJECT_DIR) }}
+
+
+
+  static-analysis-summary:
+    needs: static-analysis
+    runs-on: self-hosted # PCU-POLYSPACE-EC2
+    continue-on-error: true
+    if: |
+      startsWith(github.ref_name, 'release/') ||
+      startsWith(github.ref_name, 'develop/') ||
+      startsWith(github.ref_name, 'ci_test_branch/') ||
+      startsWith(github.ref_name, 'feature/') ||
+      startsWith(github.ref_name, 'ci/')
+    steps:
+      - run: |
+          echo "Run ID is ${{ github.run_id }}"
+          : # bash ${{ vars.STATIC_ANALYSIS_SCRIPTS_PATH }}/get_failed_job_info.sh ${{ github.run_id }}
+          : # bash ${{ vars.STATIC_ANALYSIS_SCRIPTS_PATH }}/get_execution_time_info.sh ${{ github.run_id }}
+          : # bash ${{ vars.STATIC_ANALYSIS_SCRIPTS_PATH }}/summarize_error_count.sh ${{ github.run_id }}
+          : # ls -l
+        shell: bash
+      - name: Upload Static Analysis Summary Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: static-analysis-summary-report
+          path: |
+            ./failed_jobs_info_${{ github.run_id }}.csv
+            ./pipeline_execution_time_info_${{ github.run_id }}.csv
+            ./error_count_summary_${{ github.run_id }}.csv
+          retention-days: 30
+
+
+  unit-test:
+    needs: static-analysis-summary
+    uses: ./.github/workflows/unit-test-execution.yml
+    # needsで定義したstatic-analysis-summaryの成功/失敗に関わらず実行
+    if: always()
+    strategy:
+      matrix:
+        APPLICATION_NAME: [app1, app2, app3] # ここにアプリケーション名を追加
+    with:
+      APPLICATION_NAME: ${{ toJson(matrix.APPLICATION_NAME) }}

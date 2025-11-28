@@ -1,0 +1,8 @@
+include:
+  - key: fod_manager
+    PROJECT_NAME: "fod_manager"
+    PROJECT_DIR: "ccs/fod"
+
+  - key: ract_fw
+    PROJECT_NAME: "ract_fw"
+    PROJECT_DIR: "ccs/lib/ract_fw"
