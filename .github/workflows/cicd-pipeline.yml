@@ -14,6 +14,7 @@ jobs:
         shell: powershell
         run: |
           choco install yq -y
+      # 簡易版
       - id: set-matrix
         shell: powershell
         run: |
@@ -39,6 +40,7 @@ jobs:
           echo "Executing build job for Linux environment by default."
           : # bash ${{ vars.BUILD_SCRIPTS_PATH }}/make.sh
           : # bash ${{ vars.BUILD_SCRIPTS_PATH }}/install_linux.sh
+      # delete this step if Windows build is not required
       - name: Build for Windows
         if: matrix.target_os == 'windows'
         shell: bash
@@ -101,6 +103,7 @@ jobs:
             ./pipeline_execution_time_info_${{ github.run_id }}.csv
             ./error_count_summary_${{ github.run_id }}.csv
           retention-days: 30
+
 
 
   unit-test:
